@@ -49,7 +49,7 @@ The main idea is that first to query the DOI from crossref.org, and then downloa
    ./sci-clone -i 0038-0407 -y 2010 2012 -s sci-hub.tw
    ```
    
-   ### 
+   ### Notes
    
    Sic-Hub does not have every article that has DOI, the ones not found are logged in file ```missing.log``` under each sub-directory.
    
