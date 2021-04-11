@@ -7,7 +7,7 @@ The main idea is that first to query the DOI from crossref.org, and then downloa
 ## Dependencies
 
   ```{python}
-  pip install requests BeautifulSoup progressbar
+  pip install requests bs4 progressbar
   ```
 
 ## Default Sources
