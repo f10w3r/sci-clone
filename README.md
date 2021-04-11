@@ -1,6 +1,6 @@
 # SCI-CLONE
 
-Download journal articles yearly from Sci-hub. 
+A simple script for downloading journal articles yearly from Sci-hub. 
 
 The main idea is that first to query the DOI from crossref.org, and then download article with the DOI from Sci-Hub.
 
