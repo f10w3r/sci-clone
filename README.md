@@ -39,7 +39,7 @@ The main idea is that first to query the DOI from crossref.org, and then downloa
    ./sci-clone -i 0002-9602 -y 2020
    ```
 
-   2. Download articles from journal _American Journal of Sociology_ (ISSN: 0038-0407) from year 2010 to 2012, save the files to directory ```AJS_2010-2012``` (should be created in advance):
+   2. Download articles from journal _Sociology of Education_ (ISSN: 0038-0407) from year 2010 to 2012, save the files to directory ```AJS_2010-2012``` (should be created in advance):
    ```{bash}
    ./sci-clone -i 0038-0407 -y 2010 2012 -d ./AJS_2010-2012
    ```
