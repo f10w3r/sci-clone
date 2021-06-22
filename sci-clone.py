@@ -1,6 +1,14 @@
 import json, argparse, os, time, logging
 import requests, progressbar
 from bs4 import BeautifulSoup
+from requests.adapters import HTTPAdapter
+
+# Requests Session with Retry
+retry = HTTPAdapter(max_retries=3)
+s = requests.Session()
+s.mount('http://', retry)
+s.mount('https://', retry)
+
 
 logo = r"""
  _______  _______ _________     _______  _        _______  _        _______
@@ -38,7 +46,6 @@ else:
 
 
 def get_html(url):
-    s = requests.Session()
     html = s.get(url, timeout=60, headers=headers, allow_redirects=False)
     html.encoding = 'utf-8'
     html.raise_for_status()
@@ -127,3 +134,4 @@ if __name__ == "__main__":
         else:
             print('no article.')
             continue
+           
