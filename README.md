@@ -7,7 +7,7 @@ The main idea is that first to query the DOI from crossref.org, and then downloa
 ## Dependencies
 
   ```{python}
-  pip install requests bs4 progressbar
+  pip install requests bs4 progressbar2
   ```
 
 ## Default Sources
@@ -19,7 +19,7 @@ The main idea is that first to query the DOI from crossref.org, and then downloa
 
 ## Usage
 
-  ```./sci-clone -h``` for help.
+  ```python3 ./sci-clone.py -h``` for help.
   ```{bash}
   usage: sci-clone [-h] -i ISSN -y [YEAR [YEAR ...]] [-d DIR] [-s SCIHUB]
 
@@ -36,17 +36,17 @@ The main idea is that first to query the DOI from crossref.org, and then downloa
 
    1. Download articles from journal _American Journal of Sociology_ (ISSN: 0002-9602) in year 2020:
    ```{bash}
-   ./sci-clone -i 0002-9602 -y 2020
+   python3 ./sci-clone.py -i 0002-9602 -y 2020
    ```
 
    2. Download articles from journal _Sociology of Education_ (ISSN: 0038-0407) from year 2010 to 2012, save the files to directory ```AJS_2010-2012``` (should be created in advance):
    ```{bash}
-   ./sci-clone -i 0038-0407 -y 2010 2012 -d ./AJS_2010-2012
+   python3 ./sci-clone.py -i 0038-0407 -y 2010 2012 -d ./AJS_2010-2012
    ```
 
    3. If the default Sci-Hub URL is invalid, change it to another valid:
    ```{bash}
-   ./sci-clone -i 0038-0407 -y 2010 2012 -s sci-hub.tw
+   python3 ./sci-clone.py -i 0038-0407 -y 2010 2012 -s sci-hub.tw
    ```
    
    ### Notes
