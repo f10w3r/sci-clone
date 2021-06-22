@@ -46,7 +46,7 @@ def get_html(url):
     return html
 
 def get_article(article, folder):
-    new_fn = '{0}_{1}_{2}.pdf'.format(article['volume'], article['issue'], article['DOI'].replace('/', '-'))
+    new_fn = '{0}_{1}.pdf'.format(article['volume'], article['DOI'].replace('/', '-'))
     file_path = os.path.join(args.dir[0], folder, new_fn)
     if os.path.exists(file_path):
         return True
@@ -127,17 +127,3 @@ if __name__ == "__main__":
         else:
             print('no article.')
             continue
-        
-
-
-
-
-
-
-
-
-
-
-
-
-
