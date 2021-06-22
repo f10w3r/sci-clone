@@ -67,7 +67,7 @@ def get_article(article, folder):
         pdf_url = save['onclick'].split("'")[1].replace('\\', '')
         if pdf_url.startswith('//'):
             pdf_url = 'https:' + pdf_url
-        pdf = requests.get(pdf_url, stream=True, headers = headers)
+        pdf = s.get(pdf_url, stream=True, headers = headers)
             
         with open(file_path, 'wb') as f:
             for chunk in pdf.iter_content(2000):
@@ -87,7 +87,7 @@ def get_doi(year, issn):
         params = {'rows': 1000,
                   'filter': 'from-pub-date:'+ str(year) + '-01' + ',until-pub-date:' + str(year) + '-12',
                   'cursor': cursor}
-        r = requests.get(url, params=params)
+        r = s.get(url, params=params)
         j = json.loads(r.text)
     #    print(j)
         if len(j['message']['items']) != 0:
@@ -134,4 +134,4 @@ if __name__ == "__main__":
         else:
             print('no article.')
             continue
-           
+        
