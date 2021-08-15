@@ -6,6 +6,8 @@ The main idea is that first to query the DOI from crossref.org, and then downloa
 
 ## Dependencies
 
+Only available on Python 3.x:
+
   ```{python}
   pip3 install -r requirements.txt
   ```
