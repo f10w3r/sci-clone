@@ -17,7 +17,7 @@ logo = r"""
  ___/ / /____/ /_____/ /___/ /___/ /_/ / /|  / /___   
 /____/\____/___/     \____/_____/\____/_/ |_/_____/   
 
-            Welcome to SCI-CLONE Ver 1.1.1 (by f10w3r)
+            Welcome to SCI-CLONE ver_0.1.2 (by f10w3r)
 """
 
 
@@ -40,6 +40,22 @@ if args.scihub[0].startswith("http"):
     parser.error('Invalid URL, example: -s sci-hub.tf')
 else:
     args.scihub[0] = "https://" + args.scihub[0] + "/"
+
+
+# logging format
+formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
+
+def setup_logger(name, log_file, level=logging.INFO):
+    """To setup as many loggers as you want"""
+
+    handler = logging.FileHandler(log_file, mode='w')
+    handler.setFormatter(formatter)
+
+    logger = logging.getLogger(name)
+    logger.setLevel(level)
+    logger.addHandler(handler)
+
+    return logger
 
 
 def get_html(url):
@@ -107,7 +123,8 @@ if __name__ == "__main__":
         if not os.path.exists(os.path.join(args.dir[0], folder)):
             os.mkdir(os.path.join(args.dir[0], folder))
         log_file = os.path.join(args.dir[0], folder, 'missing.log')
-        logging.basicConfig(filename=log_file, level=logging.WARNING, filemode='w', format='%(asctime)s:%(levelname)s:%(message)s')
+       # logging.basicConfig(filename=log_file, level=logging.WARNING, filemode='w', format='%(asctime)s:%(levelname)s:%(message)s')
+        logger = setup_logger(folder, log_file)
         article_list = get_doi(year, args.issn[0])
         total_article = len(article_list)
         if  total_article > 0:
@@ -122,7 +139,7 @@ if __name__ == "__main__":
                 done = get_article(article, folder=folder)
                 if not done:
                     warning_str = 'NOT_FOUND_IN_SCI-HUB:{}:{}_{}_vol{}_issue{}'.format(article['DOI'], args.issn[0], year, article['volume'],article['issue'])
-                    logging.warning(warning_str)
+                    logger.warning(warning_str)
                 bar.update(i+1)
                 time.sleep(0.01)
             bar.finish()
@@ -132,5 +149,6 @@ if __name__ == "__main__":
         else:
             print('no article.')
             continue
-    logging.shutdown()
+        logging.shutdown()
+    
         
