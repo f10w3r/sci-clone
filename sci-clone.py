@@ -1,30 +1,11 @@
-import json, argparse, os, time, logging
+import json, argparse, os, time, logging, random
 import requests, progressbar
 from bs4 import BeautifulSoup
 from requests.adapters import HTTPAdapter
-
-# Requests Session with Retry
-retry = HTTPAdapter(max_retries=3)
-s = requests.Session()
-s.mount('http://', retry)
-s.mount('https://', retry)
+from pyfiglet import Figlet
 
 
-logo = r"""
-   _____ __________     ________    ____  _   ________
-  / ___// ____/  _/    / ____/ /   / __ \/ | / / ____/
-  \__ \/ /    / /_____/ /   / /   / / / /  |/ / __/   
- ___/ / /____/ /_____/ /___/ /___/ /_/ / /|  / /___   
-/____/\____/___/     \____/_____/\____/_/ |_/_____/   
-
-            Welcome to SCI-CLONE ver_0.1.2 (by f10w3r)
-"""
-
-
-headers = {
-    'User-Agent': 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36',
-}
-
+# args
 parser = argparse.ArgumentParser()
 parser.add_argument('-i', dest='issn', type=str, required=True, nargs=1, help="journal ISSN (e.g.: 0002-9602)")
 parser.add_argument('-y', dest='year', type=str, required=True, nargs='*', help="from year to year (e.g.: 2010 2012)")
@@ -42,6 +23,18 @@ else:
     args.scihub[0] = "https://" + args.scihub[0] + "/"
 
 
+# logo and title
+fonts = [
+    'graceful', 'epic', 'big', 'small', 'shimrod', 'wavy', 'slant', 'doom', 'contessa', 
+    'cyberlarge', 'cybermedium', 'bell', 'smslant', 'ogre', 'weird', 'standard'
+]
+font = random.choice(fonts)
+f = Figlet(font=font)
+logo = '\n\n' + f.renderText('SCI-CLONE')
+title = "\tWelcome to SCI-CLONE ver_0.1.3 (by f10w3r)\n"
+source = 'Sci-Hub URL: {}'.format(args.scihub[0][8:-1]) + '\nDOI source: {}\n'.format("crossref.org")
+
+
 # logging format
 formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
 
@@ -53,6 +46,16 @@ def setup_logger(name, log_file, level=logging.INFO):
     logger.addHandler(handler)
     return logger
 
+
+# Requests Session with Retry
+retry = HTTPAdapter(max_retries=3)
+s = requests.Session()
+s.mount('http://', retry)
+s.mount('https://', retry)
+
+headers = {
+    'User-Agent': 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36',
+}
 
 def get_html(url):
     html = s.get(url, timeout=60, headers=headers, allow_redirects=False)
@@ -107,8 +110,8 @@ def get_doi(year, issn):
         
 if __name__ == "__main__":
     print(logo)
-    print('\tSCI-HUB URL:', args.scihub[0][8:-1])
-    print('\tDOI source:', "crossref.org", '\n')
+    print(title)
+    print(source)
     if len(args.year) == 1:
         year_queue = [int(args.year[0]),]
     else:
