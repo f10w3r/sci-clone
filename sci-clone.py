@@ -86,7 +86,6 @@ def get_article(article, folder):
     else:
         # Logs DOI when there is no iframe#pdf on the page
         return False
-#        print('no DOI: ', article['DOI'])
 
 def get_doi(year, issn):
     url = "https://api.crossref.org/journals/" + issn + "/works"
