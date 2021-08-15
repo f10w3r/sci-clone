@@ -1,8 +1,11 @@
 # SCI-CLONE
 
-A simple script for downloading journal articles yearly from Sci-hub. 
+A simple script for downloading journal articles yearly from Sci-Hub. 
 
-The main idea is that first to query the DOI from crossref.org, and then download article with the DOI from Sci-Hub.
+The main idea:
+
+1. Query the DOIs from crossref.org;
+2. Download articles from Sci-Hub with the DOIs.
 
 ## Dependencies
 
@@ -53,6 +56,6 @@ Only available on Python 3.x:
 
    ### Notes
 
-   Sic-Hub does not have every article that has DOI, the ones not found are logged in file ```missing.log``` under each sub-directory.
+   Sci-Hub does not have every article that has DOI, the ones that not found are logged in file ```missing.log``` under each sub-directory.
 
    
