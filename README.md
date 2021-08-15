@@ -7,7 +7,7 @@ The main idea is that first to query the DOI from crossref.org, and then downloa
 ## Dependencies
 
   ```{python}
-  pip install requests bs4 progressbar2
+  pip3 install -r requirements.txt
   ```
 
 ## Default Sources
@@ -29,9 +29,9 @@ The main idea is that first to query the DOI from crossref.org, and then downloa
     -y [YEAR [YEAR ...]]  from year to year (e.g.: 2010 2012)
     -d DIR                directory to download (default: current directory)
     -s SCIHUB             Valid Sci-Hub URL (default: sci-hub.tf)
-   ```
+  ```
    ```-i -y``` are compulsory arguments.
- 
+
    ### Examples
 
    1. Download articles from journal _American Journal of Sociology_ (ISSN: 0002-9602) in year 2020:
@@ -48,9 +48,9 @@ The main idea is that first to query the DOI from crossref.org, and then downloa
    ```{bash}
    python3 sci-clone.py -i 0038-0407 -y 2010 2012 -s sci-hub.tw
    ```
-   
+
    ### Notes
-   
+
    Sic-Hub does not have every article that has DOI, the ones not found are logged in file ```missing.log``` under each sub-directory.
-   
+
    
