@@ -11,16 +11,13 @@ s.mount('https://', retry)
 
 
 logo = r"""
- _______  _______ _________     _______  _        _______  _        _______
-(  ____ \(  ____ \\__   __/    (  ____ \( \      (  ___  )( (    /|(  ____ \
-| (    \/| (    \/   ) (       | (    \/| (      | (   ) ||  \  ( || (    \/
-| (_____ | |         | | _____ | |      | |      | |   | ||   \ | || (__
-(_____  )| |         | |(_____)| |      | |      | |   | || (\ \) ||  __)
-      ) || |         | |       | |      | |      | |   | || | \   || (
-/\____) || (____/\___) (___    | (____/\| (____/\| (___) || )  \  || (____/\
-\_______)(_______/\_______/    (_______/(_______/(_______)|/    )_)(_______/
+   _____ __________     ________    ____  _   ________
+  / ___// ____/  _/    / ____/ /   / __ \/ | / / ____/
+  \__ \/ /    / /_____/ /   / /   / / / /  |/ / __/   
+ ___/ / /____/ /_____/ /___/ /___/ /_/ / /|  / /___   
+/____/\____/___/     \____/_____/\____/_/ |_/_____/   
 
-            Welcome to SCI-CLONE Ver 1.1 (by f10w3r)
+            Welcome to SCI-CLONE Ver 1.1.1 (by f10w3r)
 """
 
 
@@ -110,7 +107,7 @@ if __name__ == "__main__":
         if not os.path.exists(os.path.join(args.dir[0], folder)):
             os.mkdir(os.path.join(args.dir[0], folder))
         log_file = os.path.join(args.dir[0], folder, 'missing.log')
-        logging.basicConfig(filename=log_file, filemode='w')
+        logging.basicConfig(filename=log_file, level=logging.WARNING, filemode='w', format='%(asctime)s:%(levelname)s:%(message)s')
         article_list = get_doi(year, args.issn[0])
         total_article = len(article_list)
         if  total_article > 0:
@@ -124,7 +121,8 @@ if __name__ == "__main__":
             for i, article in enumerate(article_list):
                 done = get_article(article, folder=folder)
                 if not done:
-                    logging.info('NO DOI:', article['DOI'], '(position:{0}_{1})'.format(article['volume'], article['issue']))
+                    warning_str = 'NOT_FOUND_IN_SCI-HUB:{}:{}_{}_vol{}_issue{}'.format(article['DOI'], args.issn[0], year, article['volume'],article['issue'])
+                    logging.warning(warning_str)
                 bar.update(i+1)
                 time.sleep(0.01)
             bar.finish()
@@ -134,4 +132,5 @@ if __name__ == "__main__":
         else:
             print('no article.')
             continue
+    logging.shutdown()
         
