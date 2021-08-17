@@ -131,7 +131,7 @@ def doi_process(args):
             article_url = urljoin(args.scihub[0], doi)
             done = get_article(article_url, file_path)
             if not done:
-                warning_str = 'NOT_FOUND_IN_SCI-HUB:{}'.format(article['DOI'])
+                warning_str = 'NOT_FOUND_IN_SCI-HUB:{}'.format(doi)
                 logger.warning(warning_str)
             bar.update(i+1)
             time.sleep(0.01)
