@@ -49,7 +49,7 @@ optional arguments:
   -d DIR                directory to download (default: current directory)
   -s SCIHUB             valid Sci-Hub URL (default: sci-hub.tf)
   ```
-   ```-i -y``` are compulsory arguments.
+   compulsory: ```-i -y```
 
 #### Examples
 
@@ -82,7 +82,7 @@ optional arguments:
   -s SCIHUB           valid Sci-Hub URL (default: sci-hub.tf)
 ```
 
-```-a``` is compulsory argument.
+compulsory: ```-a```
 
 #### Examples
 
