@@ -68,7 +68,7 @@ optional arguments:
    $ ./sci-clone.py -i 0038-0407 -y 2010 2012 -s sci-hub.tw
    ```
 
-### II. Download Article(s) w/ DOI(s)
+### II. Download Article w/ DOI
 
 ```./sci-clone.py doi -h``` for help.
 
