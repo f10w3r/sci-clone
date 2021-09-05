@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 
-import json, argparse, os, time, logging, random
-import requests, progressbar
+import json, argparse, os, time, logging, random, progressbar
 from bs4 import BeautifulSoup
+from requests import Session
 from requests.adapters import HTTPAdapter
 from requests.compat import urljoin
 from pyfiglet import Figlet
@@ -21,6 +21,7 @@ def setup_logger(name, log_file, level=logging.INFO):
 
 def get_html(url):
     html = s.get(url, timeout=60, headers=headers, allow_redirects=False)
+    time.sleep(1)
     html.encoding = 'utf-8'
     html.raise_for_status()
     html = BeautifulSoup(html.text, 'html.parser')
@@ -31,8 +32,6 @@ def get_article(article_url, file_path):
         return True
     """Downloads a single article based on its DOI."""
     html = get_html(article_url)
-    time.sleep(1)
-
     save = html.find('a', {'href': '#'})
     if save:
         pdf_url = save['onclick'].split("'")[1].replace('\\', '')
@@ -66,105 +65,73 @@ def get_doi(year, issn):
             break
     return doi_list
 
+
+def dowload(articles, folder, intro_str):
+    log_file = os.path.join(folder, 'missing.log')
+    logger = setup_logger(folder, log_file)
+    total_article = len(articles)
+    if  total_article > 0:
+        print(intro_str)
+        widgets = ['Progress: ', progressbar.Percentage(), ' ', progressbar.Bar('=', '[', ']'),' ', progressbar.Timer(), ' ', progressbar.ETA()]
+        bar = progressbar.ProgressBar(maxval=total_article, widgets=widgets)
+        bar.start()
+        for i, article in enumerate(articles):
+            done = get_article(article['article_url'], os.path.join(folder, article['file']))
+            if not done:
+                logger.warning(article['warning_str'])
+            bar.update(i+1)
+            time.sleep(0.01)
+        bar.finish()
+        downloaded = len([i for i in os.listdir(folder) if (i.endswith('.pdf') or i.endswith('.PDF'))])
+        print('download finished, {}/{} downloaded.'.format(downloaded, total_article))
+        print("missing articles see:", log_file)
+    else:
+        print('no article.')
+    logging.shutdown()
+
+
 def year_process(args):
-    print(logo)
-    print(title)
-    print(source)
     if len(args.year) == 1:
         year_queue = [int(args.year[0]),]
     else:
         year_queue = range(int(args.year[0]), int(args.year[1]) + 1)
     for year in year_queue:
-        folder = args.issn[0] + '_' + str(year)
+        folder = os.path.join(args.dir[0], args.issn[0] + '_' + str(year))
         if not os.path.exists(os.path.join(args.dir[0], folder)):
-            os.mkdir(os.path.join(args.dir[0], folder))
-        log_file = os.path.join(args.dir[0], folder, 'missing.log')
-        logger = setup_logger(folder, log_file)
+            os.mkdir(folder)
         article_list = get_doi(year, args.issn[0])
-        total_article = len(article_list)
-        if  total_article > 0:
-            print('{0}: {1} articles in year {2}.'.format(article_list[0]['container-title'][0], len(article_list), year))
-            widgets = ['Progress: ', progressbar.Percentage(), 
-                   ' ', progressbar.Bar('=', '[', ']'), 
-                   ' ', progressbar.Timer(), 
-                   ' ', progressbar.ETA()]
-            bar = progressbar.ProgressBar(maxval=len(article_list), widgets=widgets)
-            bar.start()
-            for i, article in enumerate(article_list):
-                new_fn = '{0}_{1}.pdf'.format(article['volume'], article['DOI'].replace('/', '-'))
-                file_path = os.path.join(args.dir[0], folder, new_fn)
-                article_url = urljoin(args.scihub[0], article['DOI'])
-                done = get_article(article_url, file_path)
-                if not done:
-                    warning_str = 'NOT_FOUND_IN_SCI-HUB:{}:{}_{}_vol{}_issue{}'.format(article['DOI'], args.issn[0], year, article['volume'],article['issue'])
-                    logger.warning(warning_str)
-                bar.update(i+1)
-                time.sleep(0.01)
-            bar.finish()
-            downloaded_article = len([i for i in os.listdir(os.path.join(args.dir[0], folder)) if (i.endswith('.pdf') or i.endswith('.PDF'))])
-            print('{0}: year {1} download finished, {2}/{3} downloaded.'.format(article_list[0]['container-title'][0], year, downloaded_article, total_article))
-            print("missing articles see:", log_file)
-        else:
-            print('no article.')
-            continue
-        logging.shutdown()
+        intro_str = '{0}: {1} articles in year {2}.'.format(article_list[0]['container-title'][0], len(article_list), year)
+        articles = []
+        for article in article_list:
+            article_url = urljoin(args.scihub[0], article['DOI'])
+            file = '{0}_{1}.pdf'.format(article['volume'], article['DOI'].replace('/', '-'))
+            warning_str = 'NOT_FOUND_IN_SCI-HUB:{}:{}_{}_vol{}_issue{}'.format(article['DOI'], args.issn[0], year, article['volume'],article['issue'])
+            articles.append({"article_url": article_url, "file": file, "warning_str": warning_str})
+        dowload(articles, folder, intro_str)
+
 
 def doi_process(args):
-    print(logo)
-    print(title)
-    print(source)
-    log_file = os.path.join(args.dir[0], 'missing.log')
-    logger = setup_logger('doi_process', log_file)
+    folder = args.dir[0]
     doi_list = args.doi
-    total_doi = len(doi_list)
-    if  total_doi > 0:
-        print('{} DOIs in the list.'.format(total_doi))
-        widgets = ['Progress: ', progressbar.Percentage(), 
-               ' ', progressbar.Bar('=', '[', ']'), 
-               ' ', progressbar.Timer(), 
-               ' ', progressbar.ETA()]
-        bar = progressbar.ProgressBar(maxval=total_doi, widgets=widgets)
-        bar.start()
-        for i, doi in enumerate(doi_list):
-            new_fn = '{}.pdf'.format(doi.replace('/', '-'))
-            file_path = os.path.join(args.dir[0], new_fn)
-            article_url = urljoin(args.scihub[0], doi)
-            done = get_article(article_url, file_path)
-            if not done:
-                warning_str = 'NOT_FOUND_IN_SCI-HUB:{}'.format(doi)
-                logger.warning(warning_str)
-            bar.update(i+1)
-            time.sleep(0.01)
-        bar.finish()
-        downloaded_doi = len([i for i in os.listdir(args.dir[0]) if (i.endswith('.pdf') or i.endswith('.PDF'))])
-        print('download finished, {}/{} downloaded.'.format(downloaded_doi, total_doi))
-        print("missing articles see:", log_file)
-    else:
-        print('no article.')
-    logging.shutdown()
+    intro_str = '{} DOI(s) in the list.'.format(len(doi_list))
+    articles = []
+    for doi in doi_list:
+        article_url = urljoin(args.scihub[0], doi)
+        file = '{}.pdf'.format(doi.replace('/', '-'))
+        warning_str = 'NOT_FOUND_IN_SCI-HUB:{}'.format(doi)
+        articles.append({"article_url": article_url, "file": file, "warning_str": warning_str})
+    dowload(articles, folder, intro_str)
+
+
         
 if __name__ == "__main__":
-
-    # logo and title
-    fonts = [
-        'graceful', 'epic', 'big', 'small', 'shimrod', 'wavy', 'slant', 'doom', 'contessa', 
-        'cyberlarge', 'cybermedium', 'bell', 'smslant', 'ogre', 'weird', 'standard'
-    ]
-    font = random.choice(fonts)
-    f = Figlet(font=font)
-    logo = '\n\n' + f.renderText('SCI-CLONE')
-    title = "\tWelcome to SCI-CLONE ver_0.2.0 (by f10w3r)\n"
-
-
     # Requests Session with Retry
     retry = HTTPAdapter(max_retries=3)
-    s = requests.Session()
+    s = Session()
     s.mount('http://', retry)
     s.mount('https://', retry)
 
-    headers = {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36',
-    }
+    headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36'}
 
     # args
     parser = argparse.ArgumentParser()
@@ -183,7 +150,23 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    source = 'Sci-Hub URL: {}'.format(args.scihub[0]) + '\nDOI source: {}\n'.format("crossref.org")
+
+    # year
+    if len(args.year) == 2:
+        if int(args.year[0]) > int(args.year[1]):
+            year_arg.error('Invalid year, please arrange arguments chronologically.')
+        if int(args.year[1]) < 1665:
+            year_arg.error('Invalid year, no journal that old.')
+        if int(args.year[1]) > time.localtime().tm_year:
+            year_arg.error('Invalid year, not a time machine.')
+    elif len(args.year) == 1:
+        if int(args.year[0]) > time.localtime().tm_year:
+            year_arg.error('Invalid year, not a time machine.')
+        if int(args.year[0]) < 1665:
+            year_arg.error('Invalid year, no journal that old.')
+    else:
+        year_arg.error('Invalid year, please follow: -y FROM [TO]')
+
 
     # sci-hub url
     if args.scihub[0].startswith("http"):
@@ -194,13 +177,24 @@ if __name__ == "__main__":
     # directory
     if not os.path.exists(args.dir[0]):
         year_arg.error('Invalid path, please follow: -d DIR')
-    
 
+    # logo and title
+    fonts = [
+        'graceful', 'epic', 'big', 'small', 'shimrod', 'wavy', 'slant', 'doom', 'contessa', 
+        'cyberlarge', 'cybermedium', 'bell', 'smslant', 'ogre', 'weird', 'standard'
+    ]
+    font = random.choice(fonts)
+    f = Figlet(font=font)
+    logo = '\n\n' + f.renderText('SCI-CLONE')
+    title = "\tWelcome to SCI-CLONE ver_0.2.2 (by f10w3r)\n"
+    source = 'Sci-Hub URL: {}'.format(args.scihub[0]) + '\nDOI source: {}\n'.format("crossref.org")
+
+    
+    # main
+    print('\n'.join([logo, title, source]))
     if args.command == 'doi':
         doi_process(args)
     elif args.command == 'year':
-        if len(args.year) not in (1, 2):
-            parser.error('Invalid year, please follow: -y FROM [TO]')
         year_process(args)
 
     
