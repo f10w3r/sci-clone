@@ -12,6 +12,55 @@ class color:
    GREEN = '\033[92m'; YELLOW = '\033[93m'; RED = '\033[91m'
    BOLD = '\033[1m'; ITALIC = '\033[3m'; UNDERLINE = '\033[4m'; END = '\033[0m'
 
+def justify_args():
+    # args define
+    parser = argparse.ArgumentParser()
+    subparser = parser.add_subparsers(dest='command')
+    year_arg = subparser.add_parser('year')
+    year_arg.add_argument('-i', dest='issn', type=str, required=True, nargs=1,
+        help="journal ISSN (e.g.: 0002-9602)")
+    year_arg.add_argument('-y', dest='year', type=str, required=True, nargs='*',
+        help="from year [to year] (e.g.: 2010 2012)")
+    year_arg.add_argument('-d', dest='dir', type=str, required=False, nargs=1, default=[os.getcwd(),],
+        help="directory to download (default: current directory)")
+    year_arg.add_argument('-s', dest='scihub', type=str, required=False, nargs=1, default=['sci-hub.tf',],
+        help="valid Sci-Hub URL (default: sci-hub.tf)")
+    doi_arg = subparser.add_parser('doi')
+    doi_arg.add_argument('-a', dest='doi', type=str, required=True, nargs='*',
+        help="valid DOI(s)")
+    doi_arg.add_argument('-d', dest='dir', type=str, required=False, nargs=1, default=[os.getcwd(),],
+        help="directory to download (default: current directory)")
+    doi_arg.add_argument('-s', dest='scihub', type=str, required=False, nargs=1, default=['sci-hub.tf',],
+        help="valid Sci-Hub URL (default: sci-hub.tf)")
+    args = parser.parse_args()
+
+    # args year
+    if args.command == 'year':
+        if len(args.year) == 2:
+            if int(args.year[0]) > int(args.year[1]): 
+                year_arg.error('Invalid year, please arrange arguments chronologically.')
+            if int(args.year[1]) < 1665 or int(args.year[0]) < 1665: 
+                year_arg.error('Invalid year, no journal that old.')
+            if int(args.year[1]) > time.localtime().tm_year or int(args.year[0]) > time.localtime().tm_year: 
+                year_arg.error('Invalid year, not a time machine.')
+        elif len(args.year) == 1:
+            if int(args.year[0]) < 1665: 
+                year_arg.error('Invalid year, no journal that old.')
+            if int(args.year[0]) > time.localtime().tm_year: 
+                year_arg.error('Invalid year, not a time machine.')
+        else:
+            year_arg.error('Invalid year, please follow: -y FROM [TO]')
+
+    # args sci-hub url
+    if args.scihub[0].startswith("http"):
+        parser.error('Invalid URL, example: -s sci-hub.tf')
+    else:
+        args.scihub[0] = "https://" + args.scihub[0]
+
+    # args directory
+    if not os.path.exists(args.dir[0]): year_arg.error('Invalid path, please follow: -d DIR')
+    return args
+
 def setup_logger(name, log_file, level=logging.INFO):
     # logging format
     formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
@@ -50,8 +99,8 @@ def get_article(article_url, file_path):
 def get_doi(year, issn):
     url = "https://api.crossref.org/journals/" + issn + "/works"; cursor = '*'; doi_list = list()
     while True:
-        params = {'rows': 1000, 'cursor': cursor, 'filter': 'from-pub-date:'+ str(year) + '-01' + ',until-pub-date:' + str(year) + '-12'}
-        r = s.get(url, params=params)
+        r = s.get(url, params={'rows': 1000,'cursor': cursor,
+                               'filter': 'from-pub-date:'+ str(year) + '-01' + ',until-pub-date:' + str(year) + '-12'})
         j = json.loads(r.text)
         if len(j['message']['items']) != 0:
             doi_list.extend(j['message']['items'])
@@ -76,7 +125,7 @@ def dowload(articles, folder):
             time.sleep(0.01)
         bar.finish()
         downloaded = len([i for i in os.listdir(folder) if i.lower().endswith('.pdf')])
-        print('\tDownloaded: {}/{}'.format(downloaded, len(articles)))
+        print(f"\tDownloaded: {downloaded}/{len(articles)}")
         print("\tMissing Log:", log_file)
     else:
         print('no article.')
@@ -86,79 +135,43 @@ def year_process(args):
     year_queue = [int(args.year[0]),] if len(args.year) == 1 else range(int(args.year[0]), int(args.year[1]) + 1)
     for year in year_queue:
         article_list = get_doi(year, args.issn[0])
-        print('\n{0} {1} articles in year {2}.'.format(color.ITALIC + article_list[0]['container-title'][0] + ':' + color.END, len(article_list), year))
+        journal_title = color.ITALIC + article_list[0]['container-title'][0] + ':' + color.END
+        print(f"\n{journal_title} {len(article_list)} articles in year {len(article_list)}.")
         folder = os.path.join(args.dir[0], args.issn[0] + '_' + str(year))
         if not os.path.exists(folder): os.mkdir(folder)
         articles = []
         for article in article_list:
             articles.append({
                 "article_url": urljoin(args.scihub[0], article['DOI']), 
-                "file": '{0}_{1}.pdf'.format(article['volume'], article['DOI'].replace('/', '-')), 
-                "warning_str": 'NOT_FOUND_IN_SCI-HUB:{}:{}_{}_vol{}_issue{}'.format(article['DOI'], args.issn[0], year, article['volume'],article['issue'])})
+                "file": f"{article['volume']}_{article['DOI'].replace('/', '-')}.pdf",
+                "warning_str": f"NOT_FOUND_IN_SCI-HUB:{article['DOI']}:{args.issn[0]}_{year}_vol{article['volume']}_issue{article['volume']}"})
         dowload(articles, folder)
 
 def doi_process(args):
-    print('\n{} DOI(s) in the list.'.format(len(args.doi)))
+    print(f'\n{len(args.doi)} DOI(s) in the list.')
     articles = []
     for doi in args.doi:
         articles.append({
             "article_url": urljoin(args.scihub[0], doi),
-            "file": '{}.pdf'.format(doi.replace('/', '-')), 
-            "warning_str": '{}.pdf'.format(doi.replace('/', '-'))})
+            "file": f"{doi.replace('/', '-')}.pdf", 
+            "warning_str": f"NOT_FOUND_IN_SCI-HUB:{doi}"})
     dowload(articles, args.dir[0])
 
 if __name__ == "__main__":
+    args = justify_args()
+
     # Requests Session with Retry
     s = Session()
     s.mount('http', HTTPAdapter(max_retries=3))
     s.headers.update({'User-Agent': 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36'})
-
-    # args define
-    parser = argparse.ArgumentParser()
-    subparser = parser.add_subparsers(dest='command')
-    year_arg = subparser.add_parser('year')
-    year_arg.add_argument('-i', dest='issn', type=str, required=True, nargs=1, help="journal ISSN (e.g.: 0002-9602)")
-    year_arg.add_argument('-y', dest='year', type=str, required=True, nargs='*', help="from year [to year] (e.g.: 2010 2012)")
-    year_arg.add_argument('-d', dest='dir', type=str, required=False, nargs=1, default=[os.getcwd(),], help="directory to download (default: current directory)")
-    year_arg.add_argument('-s', dest='scihub', type=str, required=False, nargs=1, default=['sci-hub.tf',], help="valid Sci-Hub URL (default: sci-hub.tf)")
-    doi_arg = subparser.add_parser('doi')
-    doi_arg.add_argument('-a', dest='doi', type=str, required=True, nargs='*', help="valid DOI(s)")
-    doi_arg.add_argument('-d', dest='dir', type=str, required=False, nargs=1, default=[os.getcwd(),], help="directory to download (default: current directory)")
-    doi_arg.add_argument('-s', dest='scihub', type=str, required=False, nargs=1, default=['sci-hub.tf',], help="valid Sci-Hub URL (default: sci-hub.tf)")
-    args = parser.parse_args()
-
-    # args year
-    if len(args.year) == 2:
-        if int(args.year[0]) > int(args.year[1]): 
-            year_arg.error('Invalid year, please arrange arguments chronologically.')
-        if int(args.year[1]) < 1665 or int(args.year[0]) < 1665: 
-            year_arg.error('Invalid year, no journal that old.')
-        if int(args.year[1]) > time.localtime().tm_year or int(args.year[0]) > time.localtime().tm_year: 
-            year_arg.error('Invalid year, not a time machine.')
-    elif len(args.year) == 1:
-        if int(args.year[0]) < 1665: 
-            year_arg.error('Invalid year, no journal that old.')
-        if int(args.year[0]) > time.localtime().tm_year: 
-            year_arg.error('Invalid year, not a time machine.')
-    else:
-        year_arg.error('Invalid year, please follow: -y FROM [TO]')
-
-    # args sci-hub url
-    if args.scihub[0].startswith("http"):
-        parser.error('Invalid URL, example: -s sci-hub.tf')
-    else:
-        args.scihub[0] = "https://" + args.scihub[0]
-
-    # args directory
-    if not os.path.exists(args.dir[0]): year_arg.error('Invalid path, please follow: -d DIR')
 
     # logo and title
     fonts = ['graceful', 'epic', 'big', 'small', 'shimrod', 'wavy', 'slant', 'doom', 'contessa',
         'cyberlarge', 'cybermedium', 'bell', 'smslant', 'ogre', 'weird', 'standard']
     f = Figlet(font=random.choice(fonts))
     logo = '\n\n' + color.GREEN + f.renderText('SCI-CLONE') + color.END
-    title = "\tWelcome to " + color.ITALIC + "SCI-CLONE" + color.END + " ver_0.2.3 (by f10w3r)\n"
-    source = 'Sci-Hub URL: {}'.format(args.scihub[0].split('://')[-1]) + '\nDOI source: {}'.format("crossref.org")
+    title = "\tWelcome to " + color.ITALIC + "SCI-CLONE" + color.END + " ver_0.2.4 (by f10w3r)\n"
+    source = f"Sci-Hub URL: {args.scihub[0].split('://')[-1]}\nDOI source: crossref.org"
     
     # main
     print('\n'.join([logo, title, source]))
