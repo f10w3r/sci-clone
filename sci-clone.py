@@ -120,7 +120,7 @@ def dowload(articles, folder):
         bar.start()
         for i, article in enumerate(articles):
             done = get_article(article['article_url'], os.path.join(folder, article['file']))
-            if not done: logger.warning(article['warning_str'])
+            if not done: logger.warning("NOT_FOUND_IN_SCI-HUB:" + article['warning_str'])
             bar.update(i+1)
             time.sleep(0.01)
         bar.finish()
@@ -136,7 +136,7 @@ def year_process(args):
     for year in year_queue:
         article_list = get_doi(year, args.issn[0])
         journal_title = color.ITALIC + article_list[0]['container-title'][0] + ':' + color.END
-        print(f"\n{journal_title} {len(article_list)} articles in year {len(article_list)}.")
+        print(f"\n{journal_title} {len(article_list)} articles in year {year}.")
         folder = os.path.join(args.dir[0], args.issn[0] + '_' + str(year))
         if not os.path.exists(folder): os.mkdir(folder)
         articles = []
@@ -144,7 +144,7 @@ def year_process(args):
             articles.append({
                 "article_url": urljoin(args.scihub[0], article['DOI']), 
                 "file": f"{article['volume']}_{article['DOI'].replace('/', '-')}.pdf",
-                "warning_str": f"NOT_FOUND_IN_SCI-HUB:{article['DOI']}:{args.issn[0]}_{year}_vol{article['volume']}_issue{article['volume']}"})
+                "warning_str": f"{article['DOI']}:{args.issn[0]}_{year}_vol{article['volume']}_issue{article['issue']}"})
         dowload(articles, folder)
 
 def doi_process(args):
@@ -154,7 +154,7 @@ def doi_process(args):
         articles.append({
             "article_url": urljoin(args.scihub[0], doi),
             "file": f"{doi.replace('/', '-')}.pdf", 
-            "warning_str": f"NOT_FOUND_IN_SCI-HUB:{doi}"})
+            "warning_str": doi})
     dowload(articles, args.dir[0])
 
 if __name__ == "__main__":
