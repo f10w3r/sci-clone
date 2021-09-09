@@ -12,7 +12,7 @@ class color:
    GREEN = '\033[92m'; YELLOW = '\033[93m'; RED = '\033[91m'
    BOLD = '\033[1m'; ITALIC = '\033[3m'; UNDERLINE = '\033[4m'; END = '\033[0m'
 
-def justify_args():
+def init():
     # args define
     parser = argparse.ArgumentParser()
     subparser = parser.add_subparsers(dest='command')
@@ -59,7 +59,14 @@ def justify_args():
 
     # args directory
     if not os.path.exists(args.dir[0]): year_arg.error('Invalid path, please follow: -d DIR')
-    return args
+
+    # Requests Session with Retry
+    session = Session()
+    session.mount('http', HTTPAdapter(max_retries=3))
+    session.headers.update({'User-Agent': 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 \
+        (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36'})
+
+    return args, session
 
 def setup_logger(name, log_file, level=logging.INFO):
     # logging format
@@ -72,7 +79,7 @@ def setup_logger(name, log_file, level=logging.INFO):
     return logger
 
 def get_link(url):
-    html = s.get(url, timeout=60, allow_redirects=False)
+    html = session.get(url, timeout=60, allow_redirects=False)
     html.encoding = 'utf-8'
     html.raise_for_status()
     time.sleep(1)
@@ -88,7 +95,7 @@ def get_article(article_url, file_path):
     link = get_link(article_url)
     if link:
         pdf_url = urljoin('https:', link) if link.startswith('//') else link
-        pdf = s.get(pdf_url, stream=True)
+        pdf = session.get(pdf_url, stream=True)
         with open(file_path, 'wb') as f:
             for chunk in pdf.iter_content(2000): f.write(chunk)
         return True
@@ -99,7 +106,7 @@ def get_article(article_url, file_path):
 def get_doi(year, issn):
     url = "https://api.crossref.org/journals/" + issn + "/works"; cursor = '*'; doi_list = list()
     while True:
-        r = s.get(url, params={'rows': 1000,'cursor': cursor,
+        r = session.get(url, params={'rows': 1000,'cursor': cursor,
                                'filter': 'from-pub-date:'+ str(year) + '-01' + ',until-pub-date:' + str(year) + '-12'})
         j = json.loads(r.text)
         if len(j['message']['items']) != 0:
@@ -158,12 +165,7 @@ def doi_process(args):
     dowload(articles, args.dir[0])
 
 if __name__ == "__main__":
-    args = justify_args()
-
-    # Requests Session with Retry
-    s = Session()
-    s.mount('http', HTTPAdapter(max_retries=3))
-    s.headers.update({'User-Agent': 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36'})
+    args, session = init()
 
     # logo and title
     fonts = ['graceful', 'epic', 'big', 'small', 'shimrod', 'wavy', 'slant', 'doom', 'contessa',
@@ -173,7 +175,7 @@ if __name__ == "__main__":
     title = "\tWelcome to " + color.ITALIC + "SCI-CLONE" + color.END + " ver_0.2.4 (by f10w3r)\n"
     source = f"Sci-Hub URL: {args.scihub[0].split('://')[-1]}\nDOI source: crossref.org"
     
-    # main
+    # main 
     print('\n'.join([logo, title, source]))
     try:
         if args.command == 'doi': doi_process(args)
