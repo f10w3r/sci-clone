@@ -175,10 +175,3 @@ if __name__ == "__main__":
         if args.command == 'year': year_process(args)
     except KeyboardInterrupt:
         print(color.RED + '\n=== mission aborted ===' + color.END)
-
-    
-        
-        
-    
-    
-        
