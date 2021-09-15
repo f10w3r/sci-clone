@@ -35,30 +35,33 @@ def init():
     args = parser.parse_args()
 
     # args year
-    if args.command == 'year':
-        if len(args.year) == 2:
-            if int(args.year[0]) > int(args.year[1]): 
-                year_arg.error('Invalid year, please arrange arguments chronologically.')
-            if int(args.year[1]) < 1665 or int(args.year[0]) < 1665: 
-                year_arg.error('Invalid year, no journal that old.')
-            if int(args.year[1]) > time.localtime().tm_year or int(args.year[0]) > time.localtime().tm_year: 
-                year_arg.error('Invalid year, not a time machine.')
-        elif len(args.year) == 1:
-            if int(args.year[0]) < 1665: 
-                year_arg.error('Invalid year, no journal that old.')
-            if int(args.year[0]) > time.localtime().tm_year: 
-                year_arg.error('Invalid year, not a time machine.')
-        else:
-            year_arg.error('Invalid year, please follow: -y FROM [TO]')
-
-    # args sci-hub url
-    if args.scihub[0].startswith("http"):
-        parser.error('Invalid URL, example: -s sci-hub.tf')
+    if args.command == None:
+        parser.print_help()
+        parser.exit(2)
     else:
-        args.scihub[0] = "https://" + args.scihub[0]
+        if args.command == 'year':
+            if len(args.year) == 2:
+                if int(args.year[0]) > int(args.year[1]): 
+                    year_arg.error('Invalid year, please arrange arguments chronologically.')
+                if int(args.year[1]) < 1665 or int(args.year[0]) < 1665: 
+                    year_arg.error('Invalid year, no journal that old.')
+                if int(args.year[1]) > time.localtime().tm_year or int(args.year[0]) > time.localtime().tm_year: 
+                    year_arg.error('Invalid year, not a time machine.')
+            elif len(args.year) == 1:
+                if int(args.year[0]) < 1665: 
+                    year_arg.error('Invalid year, no journal that old.')
+                if int(args.year[0]) > time.localtime().tm_year: 
+                    year_arg.error('Invalid year, not a time machine.')
+            else:
+                year_arg.error('Invalid year, please follow: -y FROM [TO]')
+        # args sci-hub url
+        if args.scihub[0].startswith("http"):
+            parser.error('Invalid URL, example: -s sci-hub.tf')
+        else:
+            args.scihub[0] = "https://" + args.scihub[0]
 
-    # args directory
-    if not os.path.exists(args.dir[0]): year_arg.error('Invalid path, please follow: -d DIR')
+        # args directory
+        if not os.path.exists(args.dir[0]): year_arg.error('Invalid path, please follow: -d DIR')
 
     # Requests Session with Retry
     session = Session()
