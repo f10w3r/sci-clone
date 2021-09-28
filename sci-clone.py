@@ -36,7 +36,9 @@ def init():
 
     # args year
     if args.command == None:
-        parser.print_help()
+        year_arg.print_help()
+        print()
+        doi_arg.print_help()
         parser.exit(2)
     else:
         if args.command == 'year':
