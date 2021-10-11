@@ -126,17 +126,20 @@ def dowload(articles, folder):
     logger = setup_logger(folder, log_file)
     if  len(articles) > 0:
         widgets = [progressbar.AdaptiveETA(format=' %(elapsed)s │ %(eta)s ',format_finished='        %(elapsed)s    ',),
-                    progressbar.Bar('░', '├', '┤'),'   ', 
+                    progressbar.Bar('▓', '├', '┤', '░'),'   ', 
                     progressbar.Percentage(), '  ']
         bar = progressbar.ProgressBar(maxval=len(articles), widgets=widgets)
         bar.start()
+        downloaded = int()
         for i, article in enumerate(articles):
             done = get_article(article['article_url'], os.path.join(folder, article['file']))
-            if not done: logger.warning("NOT_FOUND_IN_SCI-HUB:" + article['warning_str'])
+            if done:
+                downloaded += 1
+            else:
+                logger.warning("NOT_FOUND_IN_SCI-HUB:" + article['warning_str'])
             bar.update(i+1)
             time.sleep(0.01)
         bar.finish()
-        downloaded = len([i for i in os.listdir(folder) if i.lower().endswith('.pdf')])
         print(f"\tDownloaded: {downloaded}/{len(articles)}")
         print("\tMissing Log:", log_file)
     else:
