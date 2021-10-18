@@ -156,10 +156,11 @@ def year_process(args):
         if not os.path.exists(folder): os.mkdir(folder)
         articles = []
         for article in article_list:
+            #print(article)
             articles.append({
                 "article_url": urljoin(args.scihub[0], article['DOI']), 
                 "file": f"{article['volume']}_{article['DOI'].replace('/', '-')}.pdf",
-                "warning_str": f"{article['DOI']}:{args.issn[0]}_{year}_vol{article['volume']}_issue{article['issue']}"})
+                "warning_str": f"{article['DOI']}:{args.issn[0]}_{year}_vol{article['volume']}"})
         dowload(articles, folder)
 
 def doi_process(args):
