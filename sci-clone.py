@@ -159,7 +159,7 @@ def year_process(args):
             #print(article)
             articles.append({
                 "article_url": urljoin(args.scihub[0], article['DOI']), 
-                "file": f"{article['volume']}_{article['DOI'].replace('/', '-')}.pdf",
+                "file": f"vol{article['volume']}_{article['DOI'].replace('/', '-')}.pdf",
                 "warning_str": f"{article['DOI']}:{args.issn[0]}_{year}_vol{article['volume']}"})
         dowload(articles, folder)
 
