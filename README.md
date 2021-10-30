@@ -94,8 +94,6 @@ $ sci-clone doi 10.1126/science.1248506 10.1017/S0003055413000014
 $ pip uninstall sci-clone
 ```
 
-### Notes
+## Notes
 
-   Sci-Hub does not have every article that has DOI, the ones that not found are logged in file ```missing.log``` under each sub-directory.
-
-   
+   Sci-Hub does not have every article that has DOI, the ones that not found are logged in file ```missing.log``` under each sub-directory.   
