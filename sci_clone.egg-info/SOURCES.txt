@@ -1,0 +1,12 @@
+LICENSE
+README.md
+setup.py
+sci_clone/__init__.py
+sci_clone/__main__.py
+sci_clone.egg-info/PKG-INFO
+sci_clone.egg-info/SOURCES.txt
+sci_clone.egg-info/dependency_links.txt
+sci_clone.egg-info/entry_points.txt
+sci_clone.egg-info/not-zip-safe
+sci_clone.egg-info/requires.txt
+sci_clone.egg-info/top_level.txt

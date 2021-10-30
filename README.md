@@ -7,19 +7,19 @@
  ___/ / /____/ /_____/ /___/ /___/ /_/ / /|  / /___   
 /____/\____/___/     \____/_____/\____/_/ |_/_____/ 
 ```
-A simple script for downloading journal articles from Sci-Hub. 
+A simple script for downloading articles from Sci-Hub. 
 
 The main idea:
 
 1. Query the *Digital Object Identifier* (DOI) from crossref.org;
 2. Download articles from Sci-Hub with the DOIs.
 
-## Dependencies
+## Installation
 
-Only available on Python 3.x:
-
-  ```{python}
-  pip3 install -r requirements.txt
+  ```{bash}
+  $ git clone https://github.com/f10w3r/sci-clone
+  $ cd sci-clone
+  $ pip install .
   ```
 
 ## Default Sources
@@ -28,77 +28,71 @@ Only available on Python 3.x:
 
   Sci-Hub: [sci-hub.tf](https://sci-hub.tf)
 
-## Usage
-
-Assign execution permissions:
-
-```bash
-$ chmod +x ./sci-clone.py
-```
+## 
 
 ### I. Download Articles Annually 
 
-  ```./sci-clone.py year -h``` for help.
+  ```sci-clone issn --help``` for help.
   ```{bash}
-usage: sci-clone.py year [-h] -i ISSN -y [YEAR [YEAR ...]] [-d DIR] [-s SCIHUB]
+Usage: sci-clone issn [OPTIONS] ISSN YEAR:[%Y]...
 
-optional arguments:
-  -h, --help            show this help message and exit
-  -i ISSN               journal ISSN (e.g.: 0002-9602)
-  -y [YEAR [YEAR ...]]  from year [to year] (e.g.: 2010 2012)
-  -d DIR                directory to download (default: current directory)
-  -s SCIHUB             valid Sci-Hub URL (default: sci-hub.tf)
+Arguments:
+  ISSN          Journal ISSN (e.g.: 0002-9602)  [required]
+  YEAR:[%Y]...  From year to year (e.g.: 2011 2012)  [required]
+
+Options:
+  -d, --dir PATH     Directory to download  [default: (dynamic)]
+  -s, --scihub TEXT  Valid Sci-Hub URL  [default: sci-hub.tf]
+  -v, --version      Show version
+  --help             Show this message and exit.
   ```
-   compulsory: ```-i -y```
-
 #### Examples
 
    1. Download articles from journal _American Journal of Sociology_ (ISSN: 0002-9602) in year 2020:
    ```{bash}
-   $ ./sci-clone.py -i 0002-9602 -y 2020
+   $ sci-clone issn 0002-9602 2020
    ```
 
    2. Download articles from journal _Sociology of Education_ (ISSN: 0038-0407) from year 2010 to 2012, save the files to directory ```AJS_2010-2012``` (should be created in advance):
    ```{bash}
-   $ ./sci-clone.py -i 0038-0407 -y 2010 2012 -d ./AJS_2010-2012
+   $ sci-clone issn 0038-0407 2010 2012 -d AJS_2010-2012
    ```
 
    3. If the default Sci-Hub URL is invalid, change it to another valid:
    ```{bash}
-   $ ./sci-clone.py -i 0038-0407 -y 2010 2012 -s sci-hub.tw
+   $ sci-clone issn 0038-0407 2010 2012 -s sci-hub.tw
    ```
 
 ### II. Download Article w/ DOI
 
-```./sci-clone.py doi -h``` for help.
+```sci-clone doi --help``` for help.
 
 ```{bash}
-usage: sci-clone.py doi [-h] -a [DOI [DOI ...]] [-d DIR] [-s SCIHUB]
+Usage: sci-clone doi [OPTIONS] DOI...
 
-optional arguments:
-  -h, --help          show this help message and exit
-  -a [DOI [DOI ...]]  valid DOI(s)
-  -d DIR              directory to download (default: current directory)
-  -s SCIHUB           valid Sci-Hub URL (default: sci-hub.tf)
+Arguments:
+  DOI...  valid DOI(s)  [required]
+
+Options:
+  -d, --dir PATH     Directory to download  [default: (dynamic)]
+  -s, --scihub TEXT  Valid Sci-Hub URL  [default: sci-hub.tf]
+  -v, --version      Show version
+  --help             Show this message and exit.
 ```
-
-compulsory: ```-a```
 
 #### Examples
 
-1. Download two articles with DOIs:
+- Download two articles with DOIs:
 
 ```{bash}
-$ ./sci-clone.py doi -a 10.1126/science.1248506 10.1017/S0003055413000014
+$ sci-clone doi 10.1126/science.1248506 10.1017/S0003055413000014
 ```
 
-2. Download an article to directory ```papers``` (should be created in advance):
+## Uninstallation
 
 ```{bash}
-$ ./sci-clone.py doi -a 10.1126/science.1248506 -d ./papers
+$ pip uninstall sci-clone
 ```
-
-
 
 ### Notes
 

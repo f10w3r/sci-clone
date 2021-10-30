@@ -1,0 +1,3 @@
+[console_scripts]
+sci-clone = sci_clone.__main__:main
+
