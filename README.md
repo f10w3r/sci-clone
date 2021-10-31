@@ -31,7 +31,7 @@ The main idea:
 ### I. Download by Year.
 
   ```sci-clone issn --help``` for help.
-  ```{bash}
+```{bash}
 Usage: sci-clone issn [OPTIONS] ISSN YEAR:[%Y]...
 
 Arguments:
@@ -42,7 +42,7 @@ Options:
   -d, --dir PATH     Directory to download  [default: (dynamic)]
   -s, --scihub TEXT  Valid Sci-Hub URL  [default: sci-hub.tf]
   --help             Show this message and exit.
-  ```
+```
 #### Examples
 
    1. Download articles from journal _American Journal of Sociology_ (ISSN: 0002-9602) in year 2020:
