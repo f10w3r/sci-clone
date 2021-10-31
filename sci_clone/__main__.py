@@ -14,7 +14,7 @@ from requests import Session
 from requests.adapters import HTTPAdapter
 from requests.compat import urljoin
 
-__version__ = "0.3.0"
+__version__ = "0.3.1"
 __scihub__ = "sci-hub.tf"
 __github__ = "[link=https://github.com/f10w3r/sci-clone]Github: f10w3r/sci-clone[/link]"
 __banner__ = f"""

@@ -8,7 +8,7 @@ with open('README.md') as f:
   
 setup(
     name='sci_clone',
-    version='0.3.0',    
+    version='0.3.1',    
     description='A simple script for downloading articles from Sci-Hub.',
     url='https://github.com/f10w3r/sci-clone',
     author='f10w3r',
