@@ -1,6 +1,6 @@
 CONFIG = {    
     "name" : "sci_clone",
-    "version" :"0.3.1",    
+    "version" :"0.3.2.1",    
     "description" : "A simple script for downloading articles from Sci-Hub.",
     "url" : "https://github.com/f10w3r/sci-clone",
     "author" : "f10w3r",
@@ -14,7 +14,16 @@ CONFIG = {
         ]
     },
     "classifiers" : [
+        "Programming Language :: Python",
         "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3 :: Only",
+        "Programming Language :: Python :: 3.2",
+        "Programming Language :: Python :: 3.3",
+        "Programming Language :: Python :: 3.4",
+        "Programming Language :: Python :: 3.5",
+        "Programming Language :: Python :: 3.6",
+        "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.8",
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent"
     ],

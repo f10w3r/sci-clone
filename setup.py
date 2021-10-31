@@ -6,7 +6,7 @@ with open('requirements.txt') as f:
     requirements = f.readlines()
 
 with open('README.md') as f:
-    long_description = f.readlines()
+    long_description = f.read()
 
 setup(
     name=CONFIG['name'],

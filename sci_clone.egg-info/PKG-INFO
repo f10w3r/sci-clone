@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: sci-clone
-Version: 0.3.1
+Version: 0.3.2.1
 Summary: A simple script for downloading articles from Sci-Hub.
 Home-page: https://github.com/f10w3r/sci-clone
 Author: f10w3r
@@ -8,11 +8,115 @@ Author-email: lifuminster@gmail.com
 License: MIT
 Keywords: sci-hub sci-clone sci_clone sciclone issn doi paper article journal
 Platform: UNKNOWN
+Classifier: Programming Language :: Python
 Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3 :: Only
+Classifier: Programming Language :: Python :: 3.2
+Classifier: Programming Language :: Python :: 3.3
+Classifier: Programming Language :: Python :: 3.4
+Classifier: Programming Language :: Python :: 3.5
+Classifier: Programming Language :: Python :: 3.6
+Classifier: Programming Language :: Python :: 3.7
+Classifier: Programming Language :: Python :: 3.8
 Classifier: License :: OSI Approved :: MIT License
 Classifier: Operating System :: OS Independent
 Description-Content-Type: text/markdown
 License-File: LICENSE
 
-['# SCI-CLONE\n', '\n', '```\n', '   _____ __________     ________    ____  _   ________\n', '  / ___// ____/  _/    / ____/ /   / __ \\/ | / / ____/\n', '  \\__ \\/ /    / /_____/ /   / /   / / / /  |/ / __/   \n', ' ___/ / /____/ /_____/ /___/ /___/ /_/ / /|  / /___   \n', '/____/\\____/___/     \\____/_____/\\____/_/ |_/_____/ \n', '```\n', 'A simple script for downloading articles from Sci-Hub. \n', '\n', 'The main idea:\n', '\n', '1. Query the *Digital Object Identifier* (DOI) from crossref.org;\n', '2. Download articles from Sci-Hub with the DOIs.\n', '\n', '## Installation\n', '\n', '  ```{bash}\n', '  $ pip install git+https://github.com/f10w3r/sci-clone\n', '  ```\n', '\n', '## Default Sources\n', '\n', '  DOI: [crossref.org](https://crossref.org)\n', '\n', '  Sci-Hub: [sci-hub.tf](https://sci-hub.tf)\n', '\n', '## Usage\n', '\n', '### I. Download by Year.\n', '\n', '  ```sci-clone issn --help``` for help.\n', '```{bash}\n', 'Usage: sci-clone issn [OPTIONS] ISSN YEAR:[%Y]...\n', '\n', 'Arguments:\n', '  ISSN          Journal ISSN (e.g.: 0002-9602)  [required]\n', '  YEAR:[%Y]...  From year to year (e.g.: 2011 2012)  [required]\n', '\n', 'Options:\n', '  -d, --dir PATH     Directory to download  [default: (dynamic)]\n', '  -s, --scihub TEXT  Valid Sci-Hub URL  [default: sci-hub.tf]\n', '  --help             Show this message and exit.\n', '```\n', '#### Examples\n', '\n', '   1. Download articles from journal _American Journal of Sociology_ (ISSN: 0002-9602) in year 2020:\n', '   ```{bash}\n', '   $ sci-clone issn 0002-9602 2020\n', '   ```\n', '\n', '   2. Download articles from journal _Sociology of Education_ (ISSN: 0038-0407) from year 2010 to 2012, save the files to directory ```AJS_2010-2012``` (should be created in advance):\n', '   ```{bash}\n', '   $ sci-clone issn 0038-0407 2010 2012 -d AJS_2010-2012\n', '   ```\n', '\n', '   3. If the default Sci-Hub URL is invalid, change it to another valid:\n', '   ```{bash}\n', '   $ sci-clone issn 0038-0407 2010 2012 -s sci-hub.tw\n', '   ```\n', '\n', '### II. Download by DOI.\n', '\n', '```sci-clone doi --help``` for help.\n', '\n', '```{bash}\n', 'Usage: sci-clone doi [OPTIONS] DOI...\n', '\n', 'Arguments:\n', '  DOI...  valid DOI(s)  [required]\n', '\n', 'Options:\n', '  -d, --dir PATH     Directory to download  [default: (dynamic)]\n', '  -s, --scihub TEXT  Valid Sci-Hub URL  [default: sci-hub.tf]\n', '  --help             Show this message and exit.\n', '```\n', '\n', '#### Examples\n', '\n', '- Download two articles with DOIs:\n', '\n', '```{bash}\n', '$ sci-clone doi 10.1126/science.1248506 10.1017/S0003055413000014\n', '```\n', '\n', '## Uninstallation\n', '\n', '```{bash}\n', '$ pip uninstall sci-clone\n', '```\n', '\n', '## Notes\n', '\n', '   Sci-Hub does not have every article that has DOI, the ones that not found are logged in file ```missing.log``` under each sub-directory.   \n']
+# SCI-CLONE
+
+```
+   _____ __________     ________    ____  _   ________
+  / ___// ____/  _/    / ____/ /   / __ \/ | / / ____/
+  \__ \/ /    / /_____/ /   / /   / / / /  |/ / __/   
+ ___/ / /____/ /_____/ /___/ /___/ /_/ / /|  / /___   
+/____/\____/___/     \____/_____/\____/_/ |_/_____/ 
+```
+A simple script for downloading articles from Sci-Hub. 
+
+The main idea:
+
+1. Query the *Digital Object Identifier* (DOI) from crossref.org;
+2. Download articles from Sci-Hub with the DOIs.
+
+## Installation
+
+  ```{bash}
+  $ pip install sci-clone
+  ```
+
+## Default Sources
+
+  DOI: [crossref.org](https://crossref.org)
+
+  Sci-Hub: [sci-hub.tf](https://sci-hub.tf)
+
+## Usage
+
+### I. Download by Year.
+
+  ```sci-clone issn --help``` for help.
+```{bash}
+Usage: sci-clone issn [OPTIONS] ISSN YEAR:[%Y]...
+
+Arguments:
+  ISSN          Journal ISSN (e.g.: 0002-9602)  [required]
+  YEAR:[%Y]...  From year to year (e.g.: 2011 2012)  [required]
+
+Options:
+  -d, --dir PATH     Directory to download  [default: (dynamic)]
+  -s, --scihub TEXT  Valid Sci-Hub URL  [default: sci-hub.tf]
+  --help             Show this message and exit.
+```
+#### Examples
+
+   1. Download articles from journal _American Journal of Sociology_ (ISSN: 0002-9602) in year 2020:
+   ```{bash}
+   $ sci-clone issn 0002-9602 2020
+   ```
+
+   2. Download articles from journal _Sociology of Education_ (ISSN: 0038-0407) from year 2010 to 2012, save the files to directory ```AJS_2010-2012``` (should be created in advance):
+   ```{bash}
+   $ sci-clone issn 0038-0407 2010 2012 -d AJS_2010-2012
+   ```
+
+   3. If the default Sci-Hub URL is invalid, change it to another valid:
+   ```{bash}
+   $ sci-clone issn 0038-0407 2010 2012 -s sci-hub.tw
+   ```
+
+### II. Download by DOI.
+
+```sci-clone doi --help``` for help.
+
+```{bash}
+Usage: sci-clone doi [OPTIONS] DOI...
+
+Arguments:
+  DOI...  valid DOI(s)  [required]
+
+Options:
+  -d, --dir PATH     Directory to download  [default: (dynamic)]
+  -s, --scihub TEXT  Valid Sci-Hub URL  [default: sci-hub.tf]
+  --help             Show this message and exit.
+```
+
+#### Examples
+
+- Download two articles with DOIs:
+
+```{bash}
+$ sci-clone doi 10.1126/science.1248506 10.1017/S0003055413000014
+```
+
+## Uninstallation
+
+```{bash}
+$ pip uninstall sci-clone
+```
+
+## Notes
+
+   Sci-Hub does not have every article that has DOI, the ones that not found are logged in file ```missing.log``` under each sub-directory.   
+
 

@@ -17,7 +17,7 @@ The main idea:
 ## Installation
 
   ```{bash}
-  $ pip install git+https://github.com/f10w3r/sci-clone
+  $ pip install sci-clone
   ```
 
 ## Default Sources
