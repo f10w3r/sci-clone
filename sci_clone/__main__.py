@@ -29,8 +29,16 @@ __banner__ = f"""
                                                                  
 """
 
-def version_callback(value: bool):
-    if value:
+app = typer.Typer(invoke_without_command=True, no_args_is_help=True, help="A simple script for downloading articles from Sci-Hub.")
+console = Console()
+session = Session()
+session.mount('http', HTTPAdapter(max_retries=3))
+session.headers.update({'User-Agent': 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 \
+    (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36'})
+
+@app.callback()
+def version_callback(version: Optional[bool] = typer.Option(None, '--version', '-v', help="Show version")):
+    if version:
         console.print(
             Panel(__banner__,
                 title=f'[i b #fcec0c on #58482c]{" "*2} =====   W  E  L  C  O  M  E  !  ===== {" "*2}[/]', 
@@ -38,13 +46,6 @@ def version_callback(value: bool):
                 width=70)
         )
         raise typer.Exit()
-
-app = typer.Typer()
-console = Console()
-session = Session()
-session.mount('http', HTTPAdapter(max_retries=3))
-session.headers.update({'User-Agent': 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 \
-    (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36'})
 
 def get_doi_list(year, issn):
     """
@@ -119,13 +120,12 @@ def download(batch, articles, folder):
                 logger.info("NOT_FOUND_IN_SCI-HUB | " + article['warning_str'])
     typer.echo(f"      | {missing} missing: {log_file}")
 
-@app.command("issn")
+@app.command("issn", help="Download by year.")
 def issn_process(
         issn: str = typer.Argument(..., help="Journal ISSN (e.g.: 0002-9602)"),
         year: List[datetime] = typer.Argument(..., formats=['%Y'], help="From year to year (e.g.: 2011 2012)"),
         dir: Path = typer.Option(os.getcwd, '--dir', '-d', help="Directory to download"),
-        scihub: str = typer.Option(__scihub__, '--scihub', '-s', help="Valid Sci-Hub URL"),
-        version: Optional[bool] = typer.Option(None, '--version', '-v', help="Show version", callback=version_callback)
+        scihub: str = typer.Option(__scihub__, '--scihub', '-s', help="Valid Sci-Hub URL")
     ):
     try:
         assert len(year) in (1, 2), "Argument Error: 'year' takes 1 or 2 values."
@@ -150,12 +150,11 @@ def issn_process(
         if not os.path.exists(folder): os.mkdir(folder)
         download(y, articles, folder)
 
-@app.command("doi")
+@app.command("doi", help="Download by DOI.")
 def doi_process(
         doi: List[str] = typer.Argument(..., help="valid DOI(s)"),
         dir: Path = typer.Option(os.getcwd, '--dir', '-d', help="Directory to download"),
-        scihub: str = typer.Option(__scihub__, '--scihub', '-s', help="Valid Sci-Hub URL"),
-        version: Optional[bool] = typer.Option(None, "--version", '-v', help="Show version", callback=version_callback)
+        scihub: str = typer.Option(__scihub__, '--scihub', '-s', help="Valid Sci-Hub URL")
     ):
     try:
         assert not scihub.startswith("http"), 'Argument Error: Invalid URL, example: sci-hub.tf'; scihub = "https://" + scihub
