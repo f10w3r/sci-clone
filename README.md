@@ -28,7 +28,7 @@ The main idea:
 
 ## Usage
 
-### I. Download Articles Annually 
+### I. Download by Year.
 
   ```sci-clone issn --help``` for help.
   ```{bash}
@@ -60,7 +60,7 @@ Options:
    $ sci-clone issn 0038-0407 2010 2012 -s sci-hub.tw
    ```
 
-### II. Download Article w/ DOI
+### II. Download by DOI.
 
 ```sci-clone doi --help``` for help.
 
