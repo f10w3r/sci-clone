@@ -13,11 +13,10 @@ from bs4 import BeautifulSoup
 from requests import Session
 from requests.adapters import HTTPAdapter
 from requests.compat import urljoin
-from __config__ import CONFIG
 
-__version__ = CONFIG['version']
+__version__ = "0.3.1"
 __scihub__ = "sci-hub.tf"
-__github__ = f"[link={CONFIG['url']}]Github: f10w3r/sci-clone[/link]"
+__github__ = f"[link=https://github.com/f10w3r/sci-clone]Github: f10w3r/sci-clone[/link]"
 __banner__ = f"""
                                                                  
          _____ __________     ________    ____  _   ________     
