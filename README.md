@@ -17,9 +17,7 @@ The main idea:
 ## Installation
 
   ```{bash}
-  $ git clone https://github.com/f10w3r/sci-clone
-  $ cd sci-clone
-  $ pip install .
+  $ pip install git+https://github.com/f10w3r/sci-clone
   ```
 
 ## Default Sources
@@ -28,7 +26,7 @@ The main idea:
 
   Sci-Hub: [sci-hub.tf](https://sci-hub.tf)
 
-## 
+## Usage
 
 ### I. Download Articles Annually 
 
