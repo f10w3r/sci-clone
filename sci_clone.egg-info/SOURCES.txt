@@ -1,6 +1,7 @@
 LICENSE
 README.md
 setup.py
+sci_clone/__config__.py
 sci_clone/__init__.py
 sci_clone/__main__.py
 sci_clone.egg-info/PKG-INFO

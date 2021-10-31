@@ -1,33 +1,27 @@
 from setuptools import setup
+from json import loads
+from sci_clone.__config__ import CONFIG
 
 with open('requirements.txt') as f:
     requirements = f.readlines()
 
 with open('README.md') as f:
     long_description = f.readlines()
-  
+
 setup(
-    name='sci_clone',
-    version='0.3.1',    
-    description='A simple script for downloading articles from Sci-Hub.',
-    url='https://github.com/f10w3r/sci-clone',
-    author='f10w3r',
-    author_email='lifuminster@gmail.com',
+    name=CONFIG['name'],
+    version=CONFIG['version'],    
+    description=CONFIG['description'],
+    url=CONFIG['url'],
+    author=CONFIG['author'],
+    author_email=CONFIG['author_email'],
     long_description = long_description,
-    long_description_content_type ="text/markdown",
-    license ='MIT',
-    packages = ['sci_clone'],
-    entry_points ={
-        'console_scripts': [
-            'sci-clone=sci_clone.__main__:main'
-        ]
-    },
-    classifiers =[
-        "Programming Language :: Python :: 3",
-        "License :: OSI Approved :: MIT License",
-        "Operating System :: OS Independent",
-    ],
-    keywords ='sci-hub sci-clone sci_clone sciclone issn doi paper article journal',
+    long_description_content_type = CONFIG['long_description_content_type'],
+    license = CONFIG['license'],
+    packages = CONFIG['packages'],
+    entry_points = CONFIG['entry_points'],
+    classifiers = CONFIG['classifiers'],
+    keywords = CONFIG['keywords'],
     install_requires = requirements,
-    zip_safe = False
+    zip_safe = CONFIG['zip_safe']
 )
