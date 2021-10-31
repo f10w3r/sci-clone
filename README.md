@@ -41,7 +41,6 @@ Arguments:
 Options:
   -d, --dir PATH     Directory to download  [default: (dynamic)]
   -s, --scihub TEXT  Valid Sci-Hub URL  [default: sci-hub.tf]
-  -v, --version      Show version
   --help             Show this message and exit.
   ```
 #### Examples
@@ -74,7 +73,6 @@ Arguments:
 Options:
   -d, --dir PATH     Directory to download  [default: (dynamic)]
   -s, --scihub TEXT  Valid Sci-Hub URL  [default: sci-hub.tf]
-  -v, --version      Show version
   --help             Show this message and exit.
 ```
 
