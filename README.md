@@ -16,7 +16,7 @@ The main idea:
 
 ## Installation
 
-  ```{bash}
+  ```console
   $ pip install sci-clone
   
   # or provide the PyPI index
@@ -36,8 +36,8 @@ The main idea:
 
 ### I. Download by Year.
 
-  ```sci-clone issn --help``` for help.
-```{bash}
+```console
+$ sci-clone issn --help
 Usage: sci-clone issn [OPTIONS] ISSN YEAR:[%Y]...
 
 Arguments:
@@ -52,25 +52,24 @@ Options:
 #### Examples
 
    1. Download articles from journal _American Journal of Sociology_ (ISSN: 0002-9602) in year 2020:
-   ```{bash}
+   ```console
    $ sci-clone issn 0002-9602 2020
    ```
 
    2. Download articles from journal _Sociology of Education_ (ISSN: 0038-0407) from year 2010 to 2012, save the files to directory ```AJS_2010-2012``` (should be created in advance):
-   ```{bash}
+   ```console
    $ sci-clone issn 0038-0407 2010 2012 -d AJS_2010-2012
    ```
 
    3. If the default Sci-Hub URL is invalid, change it to another valid:
-   ```{bash}
+   ```console
    $ sci-clone issn 0038-0407 2010 2012 -s sci-hub.tw
    ```
 
 ### II. Download by DOI.
 
-```sci-clone doi --help``` for help.
-
-```{bash}
+```console
+$ sci-clone doi --help
 Usage: sci-clone doi [OPTIONS] DOI...
 
 Arguments:
@@ -86,13 +85,13 @@ Options:
 
 - Download two articles with DOIs:
 
-```{bash}
+```console
 $ sci-clone doi 10.1126/science.1248506 10.1017/S0003055413000014
 ```
 
 ## Uninstallation
 
-```{bash}
+```console
 $ pip uninstall sci-clone
 ```
 
