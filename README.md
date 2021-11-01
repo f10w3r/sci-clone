@@ -18,9 +18,9 @@
 
 - The simple command:
 
-  ```console
-  $ pip install sci-clone
-  ```
+```console
+$ pip install sci-clone
+```
 
 - or provide PyPI index if the above command fails:
 
