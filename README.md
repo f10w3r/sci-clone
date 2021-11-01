@@ -16,21 +16,29 @@
 
 ## Installation
 
+- The simple command:
+
   ```console
   $ pip install sci-clone
-  
-  # or provide the PyPI index
-  $ pip install sci-clone -i https://pypi.org/simple
-  
-  # or install from Github
-  $ pip install git+https://github.com/f10w3r/sci-clone
   ```
+
+- or provide PyPI index if the above command fails:
+
+```console
+$ pip install sci-clone -i https://pypi.org/simple
+```
+
+- or install from this repository if your country cannot connect to PyPI:
+
+```console
+$ pip install git+https://github.com/f10w3r/sci-clone
+```
 
 ## Default Sources
 
-  DOI: [crossref.org](https://crossref.org)
+- **DOI**: [crossref.org](https://crossref.org)
 
-  Sci-Hub: [sci-hub.tf](https://sci-hub.tf)
+- **Sci-Hub**: [sci-hub.tf](https://sci-hub.tf)
 
 ## Usage
 
