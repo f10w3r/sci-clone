@@ -18,6 +18,12 @@ The main idea:
 
   ```{bash}
   $ pip install sci-clone
+  
+  # or provide the PyPI index
+  $ pip install sci-clone -i https://pypi.org/simple
+  
+  # or install from Github
+  $ pip install git+https://github.com/f10w3r/sci-clone
   ```
 
 ## Default Sources

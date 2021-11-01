@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: sci-clone
-Version: 0.3.2.1
+Version: 0.3.3.3
 Summary: A simple script for downloading articles from Sci-Hub.
 Home-page: https://github.com/f10w3r/sci-clone
 Author: f10w3r
@@ -8,18 +8,11 @@ Author-email: lifuminster@gmail.com
 License: MIT
 Keywords: sci-hub sci-clone sci_clone sciclone issn doi paper article journal
 Platform: UNKNOWN
-Classifier: Programming Language :: Python
+Classifier: Development Status :: 3 - Alpha
+Classifier: Intended Audience :: Education
 Classifier: Programming Language :: Python :: 3
-Classifier: Programming Language :: Python :: 3 :: Only
-Classifier: Programming Language :: Python :: 3.2
-Classifier: Programming Language :: Python :: 3.3
-Classifier: Programming Language :: Python :: 3.4
-Classifier: Programming Language :: Python :: 3.5
-Classifier: Programming Language :: Python :: 3.6
-Classifier: Programming Language :: Python :: 3.7
-Classifier: Programming Language :: Python :: 3.8
-Classifier: License :: OSI Approved :: MIT License
-Classifier: Operating System :: OS Independent
+Classifier: Operating System :: MacOS :: MacOS X
+Classifier: Operating System :: Microsoft :: Windows
 Description-Content-Type: text/markdown
 License-File: LICENSE
 
@@ -43,6 +36,12 @@ The main idea:
 
   ```{bash}
   $ pip install sci-clone
+  
+  # or provide the PyPI index
+  $ pip install sci-clone -i https://pypi.org/simple
+  
+  # or install from Github
+  $ pip install git+https://github.com/f10w3r/sci-clone
   ```
 
 ## Default Sources
