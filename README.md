@@ -1,16 +1,17 @@
 ```
+  
    _____ __________     ________    ____  _   ________
   / ___// ____/  _/    / ____/ /   / __ \/ | / / ____/
   \__ \/ /    / /_____/ /   / /   / / / /  |/ / __/   
  ___/ / /____/ /_____/ /___/ /___/ /_/ / /|  / /___   
 /____/\____/___/     \____/_____/\____/_/ |_/_____/ 
-```
+
 A simple script for downloading articles from Sci-Hub. 
 
-The main idea:
-
-1. Query the *Digital Object Identifier* (DOI) from crossref.org;
-2. Download articles from Sci-Hub with the DOIs.
+```
+- The main idea:
+  1. Query the *Digital Object Identifier* (DOI) from crossref.org;
+  2. Download articles from Sci-Hub with the DOIs.
 
 ## Installation
 
