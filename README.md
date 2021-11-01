@@ -9,9 +9,10 @@
           A simple script for downloading articles from Sci-Hub. 
 
 ```
-- The main idea:
-  1. Query the *Digital Object Identifier* (DOI) from crossref.org;
-  2. Download articles from Sci-Hub with the DOIs.
+### Procedure
+
+1. Query the *Digital Object Identifier* (DOI) from crossref.org;
+2. Download articles from Sci-Hub with the DOIs.
 
 ## Installation
 
