@@ -1,5 +1,12 @@
 #!/usr/bin/env python3
 #-*- coding: UTF-8 -*-
+if __name__ == "__main__":
+    from utils import Utils
+    import config
+else:
+    from .utils import Utils
+    from . import config
+
 import os, typer, sys
 from datetime import datetime
 from typing import List, Optional
@@ -9,40 +16,24 @@ from rich.panel import Panel
 from requests import Session
 from requests.adapters import HTTPAdapter
 from requests.compat import urljoin
-from .utils import Utils
-from .version import __name__, __version__, __url__
 
-__scihub__ = "sci-hub.tf"
-__github__ = f"[link={__url__}]Github: f10w3r/sci-clone[/link]"
-__banner__ = f"""
-                                                                 
-         _____ __________     ________    ____  _   ________     
-        / ___// ____/  _/    / ____/ /   / __ \/ | / / ____/     
-        \__ \/ /    / /_____/ /   / /   / / / /  |/ / __/        
-       ___/ / /____/ /_____/ /___/ /___/ /_/ / /|  / /___        
-      /____/\____/___/     \____/_____/\____/_/ |_/_____/        
-                                                                 
-    A simple script for downloading articles from Sci-Hub.       
-                                                                 
-"""
-
-app = typer.Typer(invoke_without_command=True, no_args_is_help=True, help="A simple script for downloading articles from Sci-Hub.")
-console = Console()
 session = Session()
 session.mount('http', HTTPAdapter(max_retries=3))
 session.headers.update({'User-Agent': 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 \
     (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36'})
-
 utils = Utils(session)
+
+console = Console()
+app = typer.Typer(invoke_without_command=True, no_args_is_help=True, help="A simple script for downloading articles from Sci-Hub.")
 
 @app.callback()
 def version_callback(version: Optional[bool] = typer.Option(None, '--version', '-v', help="Show version")):
     global console
     if version:
         console.print(
-            Panel(__banner__,
+            Panel(config.__banner__,
                 title=f'[i b #fcec0c on #58482c]{" "*2} =====   W  E  L  C  O  M  E  !  ===== {" "*2}[/]', 
-                subtitle=f'[#fcec0c on #58482c]{" "*4}[i]Ver. {__version__}   [/i]| {__github__}{" "*4}',
+                subtitle=f'[#fcec0c on #58482c]{" "*4}[i]Ver. {config.__version__}   [/i]| [link={config.__url__}]Github: f10w3r/sci-clone[/link]{" "*4}',
                 width=70)
         )
         raise typer.Exit()
@@ -52,7 +43,7 @@ def issn_process(
         issn: str = typer.Argument(..., help="Journal ISSN (e.g.: 0002-9602)"),
         year: List[datetime] = typer.Argument(..., formats=['%Y'], help="From year to year (e.g.: 2011 2012)"),
         dir: Path = typer.Option(os.getcwd, '--dir', '-d', help="Directory to download"),
-        scihub: str = typer.Option(__scihub__, '--scihub', '-s', help="Valid Sci-Hub URL")
+        scihub: str = typer.Option(config.__scihub__, '--scihub', '-s', help="Valid Sci-Hub URL")
     ):
     try:
         assert len(year) in (1, 2), "Argument Error: 'year' takes 1 or 2 values."
@@ -63,7 +54,6 @@ def issn_process(
     except AssertionError as e:
         typer.echo(e.args[0], err=True)
         raise typer.Exit()
-
     global utils, console
     for idx, y in enumerate(range(year[0].year, year[1].year + 1)):
         doi_list = utils.get_doi_list(y, issn)
@@ -76,13 +66,14 @@ def issn_process(
         ]
         folder = os.path.join(dir, issn + '_' + str(y))
         if not os.path.exists(folder): os.mkdir(folder)
-        utils.download(y, articles, folder)
+        missing, log_file = utils.download(y, articles, folder)
+        typer.echo(f"      | {missing} missing: {log_file}")
 
 @app.command("doi", help="Download by DOI.")
 def doi_process(
         doi: List[str] = typer.Argument(..., help="valid DOI(s)"),
         dir: Path = typer.Option(os.getcwd, '--dir', '-d', help="Directory to download"),
-        scihub: str = typer.Option(__scihub__, '--scihub', '-s', help="Valid Sci-Hub URL")
+        scihub: str = typer.Option(config.__scihub__, '--scihub', '-s', help="Valid Sci-Hub URL")
     ):
     try:
         assert not scihub.startswith("http"), 'Argument Error: Invalid URL, example: sci-hub.tf'; scihub = "https://" + scihub
@@ -90,7 +81,6 @@ def doi_process(
     except AssertionError as e:
         typer.echo(e.args[0], err=True)
         raise typer.Exit()
-
     global utils
     articles = [{
         "article_url": urljoin(scihub, d), 
@@ -98,10 +88,8 @@ def doi_process(
         "warning_str": d} 
         for d in doi
     ]
-    utils.download(" DOI", articles, dir)
-
-def main():
-    app()
+    missing, log_file = utils.download(" DOI", articles, dir)
+    typer.echo(f"      | {missing} missing: {log_file}")
 
 if __name__ == "__main__":
-    sys.exit(main())
+    app()

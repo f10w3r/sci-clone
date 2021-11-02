@@ -2,9 +2,9 @@ LICENSE
 README.md
 setup.py
 sci_clone/__init__.py
+sci_clone/config.py
 sci_clone/main.py
 sci_clone/utils.py
-sci_clone/version.py
 sci_clone.egg-info/PKG-INFO
 sci_clone.egg-info/SOURCES.txt
 sci_clone.egg-info/dependency_links.txt

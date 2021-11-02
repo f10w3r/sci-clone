@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: sci-clone
-Version: 0.3.3.3
+Version: 0.3.3.4
 Summary: A simple script for downloading articles from Sci-Hub.
 Home-page: https://github.com/f10w3r/sci-clone
 Author: f10w3r
@@ -16,46 +16,54 @@ Classifier: Operating System :: Microsoft :: Windows
 Description-Content-Type: text/markdown
 License-File: LICENSE
 
-# SCI-CLONE
+```
+  
+             _____ __________     ________    ____  _   ________
+            / ___// ____/  _/    / ____/ /   / __ \/ | / / ____/
+            \__ \/ /    / /_____/ /   / /   / / / /  |/ / __/   
+           ___/ / /____/ /_____/ /___/ /___/ /_/ / /|  / /___   
+          /____/\____/___/     \____/_____/\____/_/ |_/_____/ 
+
+          A simple script for downloading articles from Sci-Hub. 
 
 ```
-   _____ __________     ________    ____  _   ________
-  / ___// ____/  _/    / ____/ /   / __ \/ | / / ____/
-  \__ \/ /    / /_____/ /   / /   / / / /  |/ / __/   
- ___/ / /____/ /_____/ /___/ /___/ /_/ / /|  / /___   
-/____/\____/___/     \____/_____/\____/_/ |_/_____/ 
-```
-A simple script for downloading articles from Sci-Hub. 
-
-The main idea:
+### Procedure
 
 1. Query the *Digital Object Identifier* (DOI) from crossref.org;
 2. Download articles from Sci-Hub with the DOIs.
 
 ## Installation
 
-  ```{bash}
-  $ pip install sci-clone
-  
-  # or provide the PyPI index
-  $ pip install sci-clone -i https://pypi.org/simple
-  
-  # or install from Github
-  $ pip install git+https://github.com/f10w3r/sci-clone
-  ```
+- The simple command:
+
+```console
+$ pip install sci-clone
+```
+
+- or provide PyPI index if the above command fails:
+
+```console
+$ pip install sci-clone -i https://pypi.org/simple
+```
+
+- or install from this repository if your country cannot connect to PyPI:
+
+```console
+$ pip install git+https://github.com/f10w3r/sci-clone
+```
 
 ## Default Sources
 
-  DOI: [crossref.org](https://crossref.org)
+- **DOI**: [crossref.org](https://crossref.org)
 
-  Sci-Hub: [sci-hub.tf](https://sci-hub.tf)
+- **Sci-Hub**: [sci-hub.tf](https://sci-hub.tf)
 
 ## Usage
 
 ### I. Download by Year.
 
-  ```sci-clone issn --help``` for help.
-```{bash}
+```console
+$ sci-clone issn --help
 Usage: sci-clone issn [OPTIONS] ISSN YEAR:[%Y]...
 
 Arguments:
@@ -70,25 +78,24 @@ Options:
 #### Examples
 
    1. Download articles from journal _American Journal of Sociology_ (ISSN: 0002-9602) in year 2020:
-   ```{bash}
+   ```console
    $ sci-clone issn 0002-9602 2020
    ```
 
    2. Download articles from journal _Sociology of Education_ (ISSN: 0038-0407) from year 2010 to 2012, save the files to directory ```AJS_2010-2012``` (should be created in advance):
-   ```{bash}
+   ```console
    $ sci-clone issn 0038-0407 2010 2012 -d AJS_2010-2012
    ```
 
    3. If the default Sci-Hub URL is invalid, change it to another valid:
-   ```{bash}
+   ```console
    $ sci-clone issn 0038-0407 2010 2012 -s sci-hub.tw
    ```
 
 ### II. Download by DOI.
 
-```sci-clone doi --help``` for help.
-
-```{bash}
+```console
+$ sci-clone doi --help
 Usage: sci-clone doi [OPTIONS] DOI...
 
 Arguments:
@@ -104,13 +111,13 @@ Options:
 
 - Download two articles with DOIs:
 
-```{bash}
+```console
 $ sci-clone doi 10.1126/science.1248506 10.1017/S0003055413000014
 ```
 
 ## Uninstallation
 
-```{bash}
+```console
 $ pip uninstall sci-clone
 ```
 

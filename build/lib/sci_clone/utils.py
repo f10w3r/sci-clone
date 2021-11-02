@@ -1,9 +1,10 @@
 #-*- coding: UTF-8 -*-
-import json, os, typer
+import json, os
 from loguru import logger
 from rich.table import Column
 from rich.progress import Progress, BarColumn, TextColumn, TimeElapsedColumn
 from bs4 import BeautifulSoup
+from requests.compat import urljoin
 
 class Utils:
     """
@@ -35,11 +36,18 @@ class Utils:
         html = self.session.get(url, timeout=60, allow_redirects=False)
         html.encoding = 'utf-8'
         html.raise_for_status()
-        tag = BeautifulSoup(html.text, 'html.parser').find('a', {'href': '#'})
-        if tag:
-            return tag['onclick'].split("'")[1].replace('\\', '')
+        article = BeautifulSoup(html.text, 'html.parser').find('div', {'id': 'article'})
+        if article:
+            iframe = article.find('iframe')
+            embed = article.find('embed')
+            if iframe:
+                raw_url = iframe['src'].split('#')[0]
+            elif embed:
+                raw_url = embed['src'].split('#')[0]
+            pdf_url = urljoin('https:', raw_url) if raw_url.startswith('//') else raw_url
         else:
-            return None
+            pdf_url = None
+        return pdf_url
 
     def get_article(self, article_url, file_path):
         """
@@ -49,8 +57,7 @@ class Utils:
         if os.path.exists(file_path): return True
         link = self.get_link(article_url)
         if link:
-            pdf_url = urljoin('https:', link) if link.startswith('//') else link
-            pdf = self.session.get(pdf_url, stream=True)
+            pdf = self.session.get(link, params={'download': True}, stream=True)
             with open(file_path, 'wb') as f:
                 for chunk in pdf.iter_content(2000): f.write(chunk)
             return True
@@ -83,4 +90,4 @@ class Utils:
                 else:
                     missing += 1
                     logger.info("NOT_FOUND_IN_SCI-HUB | " + article['warning_str'])
-        typer.echo(f"      | {missing} missing: {log_file}")
+        return missing, log_file
