@@ -1,13 +1,10 @@
 #!/usr/bin/env python3
 #-*- coding: UTF-8 -*-
-if __name__ == "__main__":
-    from utils import Utils
-    import config
-else:
-    from .utils import Utils
-    from . import config
 
-import os, typer, sys
+from .utils import Utils
+from . import config
+from os import path, getcwd, mkdir
+from typer import Typer, Argument, Option, echo, Exit, FileText
 from datetime import datetime
 from typing import List, Optional
 from pathlib import Path
@@ -24,10 +21,10 @@ session.headers.update({'User-Agent': 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/
 utils = Utils(session)
 
 console = Console()
-app = typer.Typer(invoke_without_command=True, no_args_is_help=True, help="A simple script for downloading articles from Sci-Hub.")
+app = Typer(invoke_without_command=True, no_args_is_help=True, help="A simple script for downloading articles from Sci-Hub.")
 
 @app.callback()
-def version_callback(version: Optional[bool] = typer.Option(None, '--version', '-v', help="Show version")):
+def version_callback(version: Optional[bool] = Option(None, '--version', '-v', is_eager=True, help="Show version")):
     global console
     if version:
         console.print(
@@ -36,24 +33,24 @@ def version_callback(version: Optional[bool] = typer.Option(None, '--version', '
                 subtitle=f'[#fcec0c on #58482c]{" "*4}[i]Ver. {config.__version__}   [/i]| [link={config.__url__}]Github: f10w3r/sci-clone[/link]{" "*4}',
                 width=70)
         )
-        raise typer.Exit()
+        raise Exit()
 
-@app.command("issn", help="Download by year.")
+@app.command("issn", no_args_is_help=True, help="Download by year.")
 def issn_process(
-        issn: str = typer.Argument(..., help="Journal ISSN (e.g.: 0002-9602)"),
-        year: List[datetime] = typer.Argument(..., formats=['%Y'], help="From year to year (e.g.: 2011 2012)"),
-        dir: Path = typer.Option(os.getcwd, '--dir', '-d', help="Directory to download"),
-        scihub: str = typer.Option(config.__scihub__, '--scihub', '-s', help="Valid Sci-Hub URL")
+        issn: str = Argument(..., help="Journal ISSN (e.g.: 0002-9602)"),
+        year: List[datetime] = Argument(..., formats=['%Y'], help="From year to year (e.g.: 2011 2012)"),
+        dir: Path = Option(getcwd, '--dir', '-d', help="Directory to download"),
+        scihub: str = Option(config.__scihub__, '--scihub', '-s', help="Valid Sci-Hub URL")
     ):
     try:
         assert len(year) in (1, 2), "Argument Error: 'year' takes 1 or 2 values."
         if len(year) == 1: year = [year[0], year[0]]
         assert datetime.strptime("1665", "%Y") < year[0] <= year[1] <= datetime.now(), "Argument Error: Invalid 'year', not a time machine."
         assert not scihub.startswith("http"), 'Argument Error: Invalid URL, example: sci-hub.tf'; scihub = "https://" + scihub
-        assert os.path.exists(dir), 'Argument Error: Invalid path.'
+        assert path.exists(dir), 'Argument Error: Invalid path.'
     except AssertionError as e:
-        typer.echo(e.args[0], err=True)
-        raise typer.Exit()
+        echo(e.args[0], err=True)
+        raise Exit()
     global utils, console
     for idx, y in enumerate(range(year[0].year, year[1].year + 1)):
         doi_list = utils.get_doi_list(y, issn)
@@ -64,32 +61,42 @@ def issn_process(
             "warning_str": f"{article['DOI']} | {issn} | {y}_VOL{article['volume']}"}
             for article in doi_list
         ]
-        folder = os.path.join(dir, issn + '_' + str(y))
-        if not os.path.exists(folder): os.mkdir(folder)
-        missing, log_file = utils.download(y, articles, folder)
-        typer.echo(f"      | {missing} missing: {log_file}")
+        folder = path.join(dir, issn + '_' + str(y))
+        if not path.exists(folder): mkdir(folder)
+        task = y
+        missing, log_file = utils.download(task, articles, folder)
+        echo(f" {' '*len(task)} | {missing} missing: {log_file}")
 
-@app.command("doi", help="Download by DOI.")
+@app.command("doi", no_args_is_help=True, help="Download by DOI.")
 def doi_process(
-        doi: List[str] = typer.Argument(..., help="valid DOI(s)"),
-        dir: Path = typer.Option(os.getcwd, '--dir', '-d', help="Directory to download"),
-        scihub: str = typer.Option(config.__scihub__, '--scihub', '-s', help="Valid Sci-Hub URL")
+        doi: List[str] = Argument(..., help="valid DOI(s) or file (*.bib, *.txt)"),
+        dir: Path = Option(getcwd, '--dir', '-d', help="Directory to download"),
+        scihub: str = Option(config.__scihub__, '--scihub', '-s', help="Valid Sci-Hub URL")
     ):
+    global utils
     try:
         assert not scihub.startswith("http"), 'Argument Error: Invalid URL, example: sci-hub.tf'; scihub = "https://" + scihub
-        assert os.path.exists(dir), 'Argument Error: Invalid path.'
+        assert path.exists(dir), 'Argument Error: Invalid path.'
+        if doi[0].lower().endswith('.bib'):
+            assert path.exists(doi[0]), 'Argument Error: Invalid file path.'
+            doi_list = utils.parseBibTex(doi[0])
+        elif doi[0].lower().endswith('.txt'):
+            assert path.exists(doi[0]), 'Argument Error: Invalid file path.'
+            doi_list = utils.parseTxt(doi[0])
+        else:
+            doi_list = doi
     except AssertionError as e:
-        typer.echo(e.args[0], err=True)
-        raise typer.Exit()
-    global utils
+        echo(e.args[0], err=True)
+        raise Exit()
+    if not doi_list:
+        echo("There is no valid DOI.", err=True)
+        raise Exit()
     articles = [{
         "article_url": urljoin(scihub, d), 
         "file_name": f"{d.replace('/', '-')}.pdf", 
         "warning_str": d} 
-        for d in doi
+        for d in doi_list
     ]
-    missing, log_file = utils.download(" DOI", articles, dir)
-    typer.echo(f"      | {missing} missing: {log_file}")
-
-if __name__ == "__main__":
-    app()
+    task = "DOI"
+    missing, log_file = utils.download(task, articles, dir)
+    echo(f" {' '*len(task)} | {missing} missing: {log_file}")

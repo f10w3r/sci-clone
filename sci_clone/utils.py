@@ -1,10 +1,11 @@
 #-*- coding: UTF-8 -*-
-import json, os
+import json, os, sys
 from loguru import logger
 from rich.table import Column
 from rich.progress import Progress, BarColumn, TextColumn, TimeElapsedColumn
 from bs4 import BeautifulSoup
 from requests.compat import urljoin
+import configparser
 
 class Utils:
     """
@@ -12,6 +13,29 @@ class Utils:
     """
     def __init__(self, session):
         self.session = session
+
+    def parseBibTex(self, file):
+        with open(file, 'r') as file:
+            for line in file.readlines():
+                item = line if line.startswith('@') else item + line
+                if line.startswith('}'):
+                    bibtex = configparser.ConfigParser(allow_no_value=True)
+                    bibtex.read_string('[item]' + item.rstrip('}\n'))
+                    bibtex['item']['cate'] = item.split(',')[0].split('{')[0].lstrip('@')
+                    bibtex['item']['citekey'] = item.split(',')[0].split('{')[1]
+                    for key in bibtex['item']:
+                        bibtex['item'][key] = bibtex['item'][key].lstrip('{')
+                        bibtex['item'][key] = bibtex['item'][key].rstrip('},')
+                        bibtex['item'][key] = bibtex['item'][key].replace('\n', ' ')
+                    item_dict = dict(bibtex.items('item'))
+                    if 'doi' in item_dict:
+                        yield item_dict['doi']
+
+    def parseTxt(self, file):
+        with open(file, 'r') as file:
+            for line in file.readlines():
+                if "/" in line:
+                    yield line.replace('\n', '')
 
     def get_doi_list(self, year, issn):
         """
@@ -44,6 +68,8 @@ class Utils:
                 raw_url = iframe['src'].split('#')[0]
             elif embed:
                 raw_url = embed['src'].split('#')[0]
+            else:
+                sys.exit("new pattern of sci-hub webpage, please report to github")
             pdf_url = urljoin('https:', raw_url) if raw_url.startswith('//') else raw_url
         else:
             pdf_url = None
@@ -57,9 +83,9 @@ class Utils:
         if os.path.exists(file_path): return True
         link = self.get_link(article_url)
         if link:
-            pdf = self.session.get(link, params={'download': True}, stream=True)
-            with open(file_path, 'wb') as f:
-                for chunk in pdf.iter_content(2000): f.write(chunk)
+            pdf = self.session.get(link, params={'download': True}, timeout=60)
+            with open(file_path, 'wb') as pdf_file:
+                pdf_file.write(pdf.content)
             return True
         else:
             # no iframe#pdf on the page
