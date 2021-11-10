@@ -6,7 +6,7 @@
            ___/ / /____/ /_____/ /___/ /___/ /_/ / /|  / /___   
           /____/\____/___/     \____/_____/\____/_/ |_/_____/ 
 
-			          A simple tool for cloning from Sci-Hub. 
+               A simple tool for cloning from Sci-Hub. 
 
 ```
 ### Procedure
@@ -49,7 +49,7 @@ $ sci-clone doi --help
 Usage: sci-clone doi [OPTIONS] DOI...
 
 Arguments:
-  DOI...  valid DOI(s) or file (*.bib, *.txt)  [required]
+  DOI...  Valid DOI(s) or file (*.bib, *.txt)  [required]
 
 Options:
   -d, --dir PATH     Directory to download  [default: (dynamic)]

@@ -69,7 +69,7 @@ def issn_process(
 
 @app.command("doi", no_args_is_help=True, help="Download by DOI.")
 def doi_process(
-        doi: List[str] = Argument(..., help="valid DOI(s) or file (*.bib, *.txt)"),
+        doi: List[str] = Argument(..., help="Valid DOI(s) or file (*.bib, *.txt)"),
         dir: Path = Option(getcwd, '--dir', '-d', help="Directory to download"),
         scihub: str = Option(config.__scihub__, '--scihub', '-s', help="Valid Sci-Hub URL")
     ):
