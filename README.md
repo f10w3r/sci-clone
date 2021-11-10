@@ -91,21 +91,21 @@ Options:
 
 - Download articles from journal _American Journal of Sociology_ (ISSN: 0002-9602) in year 2020:
 
-   ```console
+```console
 $ sci-clone issn 0002-9602 2020
-   ```
+```
 
 - Download articles from journal _Sociology of Education_ (ISSN: 0038-0407) from year 2010 to 2012, save the files to directory ```AJS_2010-2012``` (should be created in advance):
 
-   ```console
+```console
 $ sci-clone issn 0038-0407 2010 2012 -d AJS_2010-2012
-   ```
+```
 
 - If the default Sci-Hub URL is invalid, change it to another valid one:
 
-   ```console
+```console
 $ sci-clone issn 0038-0407 2010 2012 -s sci-hub.tw
-   ```
+```
 
 ## Uninstallation
 
