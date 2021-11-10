@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 #-*- coding: UTF-8 -*-
-
-from .utils import Utils
-from . import config
+from . import utils, config
 from os import path, getcwd, mkdir
 from typer import Typer, Argument, Option, echo, Exit, FileText
 from datetime import datetime
@@ -18,7 +16,7 @@ session = Session()
 session.mount('http', HTTPAdapter(max_retries=3))
 session.headers.update({'User-Agent': 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 \
     (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36'})
-utils = Utils(session)
+operator = utils.Utils(session)
 
 console = Console()
 app = Typer(invoke_without_command=True, no_args_is_help=True, help="A simple script for downloading articles from Sci-Hub.")
@@ -51,9 +49,9 @@ def issn_process(
     except AssertionError as e:
         echo(e.args[0], err=True)
         raise Exit()
-    global utils, console
+    global operator, console
     for idx, y in enumerate(range(year[0].year, year[1].year + 1)):
-        doi_list = utils.get_doi_list(y, issn)
+        doi_list = operator.get_doi_list(y, issn)
         if not idx: console.print(f"   {doi_list[0]['container-title'][0]}   ".upper(), style="bold white italic on blue")
         articles = [{
             "article_url": urljoin(scihub, article['DOI']), 
@@ -64,7 +62,7 @@ def issn_process(
         folder = path.join(dir, issn + '_' + str(y))
         if not path.exists(folder): mkdir(folder)
         task = y
-        missing, log_file = utils.download(task, articles, folder)
+        missing, log_file = operator.download(task, articles, folder)
         echo(f" {' '*len(task)} | {missing} missing: {log_file}")
 
 @app.command("doi", no_args_is_help=True, help="Download by DOI.")
@@ -73,16 +71,16 @@ def doi_process(
         dir: Path = Option(getcwd, '--dir', '-d', help="Directory to download"),
         scihub: str = Option(config.__scihub__, '--scihub', '-s', help="Valid Sci-Hub URL")
     ):
-    global utils
+    global operator
     try:
         assert not scihub.startswith("http"), 'Argument Error: Invalid URL, example: sci-hub.tf'; scihub = "https://" + scihub
         assert path.exists(dir), 'Argument Error: Invalid path.'
         if doi[0].lower().endswith('.bib'):
             assert path.exists(doi[0]), 'Argument Error: Invalid file path.'
-            doi_list = utils.parseBibTex(doi[0])
+            doi_list = operator.parseBibTex(doi[0])
         elif doi[0].lower().endswith('.txt'):
             assert path.exists(doi[0]), 'Argument Error: Invalid file path.'
-            doi_list = utils.parseTxt(doi[0])
+            doi_list = operator.parseTxt(doi[0])
         else:
             doi_list = doi
     except AssertionError as e:
@@ -98,5 +96,5 @@ def doi_process(
         for d in doi_list
     ]
     task = "DOI"
-    missing, log_file = utils.download(task, articles, dir)
+    missing, log_file = operator.download(task, articles, dir)
     echo(f" {' '*len(task)} | {missing} missing: {log_file}")

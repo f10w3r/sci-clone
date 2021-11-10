@@ -1,6 +1,6 @@
 #-*- coding: UTF-8 -*-
 __name__ = "sci-clone"
-__version__ = "0.3.3.7"
+__version__ = "0.3.3.9"
 __url__ = "https://github.com/f10w3r/sci-clone"
 __banner__ = """
                                                                  
@@ -10,7 +10,7 @@ __banner__ = """
        ___/ / /____/ /_____/ /___/ /___/ /_/ / /|  / /___        
       /____/\____/___/     \____/_____/\____/_/ |_/_____/        
                                                                  
-    A simple script for downloading articles from Sci-Hub.       
+            A simple tool for cloning from Sci-Hub.       
                                                                  
 """
 __description__ = "A simple tool for cloning from Sci-Hub."

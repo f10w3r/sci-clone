@@ -16,26 +16,24 @@ class Utils:
 
     def parseBibTex(self, file):
         with open(file, 'r') as file:
-            for line in file.readlines():
-                item = line if line.startswith('@') else item + line
-                if line.startswith('}'):
-                    bibtex = configparser.ConfigParser(allow_no_value=True)
-                    bibtex.read_string('[item]' + item.rstrip('}\n'))
-                    bibtex['item']['cate'] = item.split(',')[0].split('{')[0].lstrip('@')
-                    bibtex['item']['citekey'] = item.split(',')[0].split('{')[1]
-                    for key in bibtex['item']:
-                        bibtex['item'][key] = bibtex['item'][key].lstrip('{')
-                        bibtex['item'][key] = bibtex['item'][key].rstrip('},')
-                        bibtex['item'][key] = bibtex['item'][key].replace('\n', ' ')
-                    item_dict = dict(bibtex.items('item'))
-                    if 'doi' in item_dict:
-                        yield item_dict['doi']
+            items = file.read().strip().split('@')
+            for item in items[1:]:
+                bibtex = configparser.ConfigParser(allow_no_value=True)
+                bibtex.read_string('[item]' + item.rstrip('}\n'))
+                bibtex['item']['cate'] = item.split(',')[0].split('{')[0]
+                bibtex['item']['citekey'] = item.split(',')[0].split('{')[1]
+                for key in bibtex['item']:
+                    bibtex['item'][key] = bibtex['item'][key].lstrip('{')
+                    bibtex['item'][key] = bibtex['item'][key].rstrip('},')
+                    bibtex['item'][key] = bibtex['item'][key].replace('\n', ' ')
+                item_dict = dict(bibtex.items('item'))
+                if 'doi' in item_dict:
+                    yield item_dict['doi']
 
     def parseTxt(self, file):
         with open(file, 'r') as file:
             for line in file.readlines():
-                if "/" in line:
-                    yield line.replace('\n', '')
+                if "/" in line: yield line.replace('\n', '')
 
     def get_doi_list(self, year, issn):
         """
