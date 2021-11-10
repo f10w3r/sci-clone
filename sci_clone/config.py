@@ -1,6 +1,10 @@
 #-*- coding: UTF-8 -*-
 __name__ = "sci-clone"
+<<<<<<< HEAD
 __version__ = "0.3.3.9"
+=======
+__version__ = "0.3.3.8"
+>>>>>>> 5e6f122d15a98a3036b041af21c10077523f2569
 __url__ = "https://github.com/f10w3r/sci-clone"
 __banner__ = """
                                                                  

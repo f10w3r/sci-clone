@@ -1,6 +1,10 @@
 Metadata-Version: 2.1
 Name: sci-clone
+<<<<<<< HEAD
 Version: 0.3.3.9
+=======
+Version: 0.3.3.8
+>>>>>>> 5e6f122d15a98a3036b041af21c10077523f2569
 Summary: A simple tool for cloning from Sci-Hub.
 Home-page: https://github.com/f10w3r/sci-clone
 Author: f10w3r
