@@ -45,7 +45,7 @@ $ pip install git+https://github.com/f10w3r/sci-clone
 ### I. Download by DOI.
 
 ```console
-$ sci-clone doi --help
+$ sci-clone doi
 Usage: sci-clone doi [OPTIONS] DOI...
 
 Arguments:
@@ -74,7 +74,7 @@ $ sci-clone doi bib.txt
 ### II. Download by Year.
 
 ```console
-$ sci-clone issn --help
+$ sci-clone issn
 Usage: sci-clone issn [OPTIONS] ISSN YEAR:[%Y]...
 
 Arguments:
