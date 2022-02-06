@@ -25,11 +25,13 @@ setup(
         ]
     },
     classifiers = [
-        "Development Status :: 3 - Alpha",
         "Intended Audience :: Education",
-        "Programming Language :: Python :: 3",
+        "Intended Audience :: Science/Research",
+        "License :: OSI Approved :: MIT License",
+        "Programming Language :: Python :: 3 :: Only",
         "Operating System :: MacOS :: MacOS X",
         "Operating System :: Microsoft :: Windows",
+        "Operating System :: POSIX :: Linux"
     ],
     keywords = "sci-hub sci-clone sci_clone sciclone issn doi paper article journal",
     install_requires = REQUIREMENTS,

@@ -19,7 +19,7 @@ session.headers.update({'User-Agent': 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/
 operator = utils.Utils(session)
 
 console = Console()
-app = Typer(invoke_without_command=True, no_args_is_help=True, help="A simple script for downloading articles from Sci-Hub.")
+app = Typer(invoke_without_command=True, no_args_is_help=True, help=config.__description__)
 
 @app.callback()
 def version_callback(version: Optional[bool] = Option(None, '--version', '-v', is_eager=True, help="Show version")):
@@ -61,13 +61,12 @@ def issn_process(
         ]
         folder = path.join(dir, issn + '_' + str(y))
         if not path.exists(folder): mkdir(folder)
-        task = y
-        missing, log_file = operator.download(task, articles, folder)
-        echo(f" {' '*len(task)} | {missing} missing: {log_file}")
+        missing, log_file = operator.download(y, articles, folder)
+        echo(f" {' '*4} | {missing} missing: {log_file}")
 
-@app.command("doi", no_args_is_help=True, help="Download by DOI.")
+@app.command("doi", no_args_is_help=True, help="Download by DOI/arXivID.")
 def doi_process(
-        doi: List[str] = Argument(..., help="Valid DOI(s) or file (*.bib, *.txt)"),
+        ids: List[str] = Argument(..., help="Valid DOI/arXivID(s) or file (*.bib, *.txt)"),
         dir: Path = Option(getcwd, '--dir', '-d', help="Directory to download"),
         scihub: str = Option(config.__scihub__, '--scihub', '-s', help="Valid Sci-Hub URL")
     ):
@@ -75,26 +74,32 @@ def doi_process(
     try:
         assert not scihub.startswith("http"), 'Argument Error: Invalid URL, example: sci-hub.tf'; scihub = "https://" + scihub
         assert path.exists(dir), 'Argument Error: Invalid path.'
-        if doi[0].lower().endswith('.bib'):
-            assert path.exists(doi[0]), 'Argument Error: Invalid file path.'
-            doi_list = operator.parseBibTex(doi[0])
-        elif doi[0].lower().endswith('.txt'):
-            assert path.exists(doi[0]), 'Argument Error: Invalid file path.'
-            doi_list = operator.parseTxt(doi[0])
+        if ids[0].lower().endswith('.bib'):
+            assert path.exists(ids[0]), 'Argument Error: Invalid file path.'
+            ids_list = operator.parseBibTex(ids[0])
+        elif ids[0].lower().endswith('.txt'):
+            assert path.exists(ids[0]), 'Argument Error: Invalid file path.'
+            ids_list = operator.parseTxt(ids[0])
         else:
-            doi_list = doi
+            ids_list = ids
     except AssertionError as e:
         echo(e.args[0], err=True)
         raise Exit()
-    if not doi_list:
+    if not ids_list:
         echo("There is no valid DOI.", err=True)
         raise Exit()
-    articles = [{
-        "article_url": urljoin(scihub, d), 
-        "file_name": f"{d.replace('/', '-')}.pdf", 
-        "warning_str": d} 
-        for d in doi_list
-    ]
-    task = "DOI"
+    articles = list()
+    for d in ids_list:
+        if d.startswith('arXiv'):
+            articles.append({
+                "article_url": urljoin('https://arxiv.org/abs', d.split(':')[1]),
+                "file_name": f"{d.replace(':', '-')}.pdf", 
+                "warning_str": d})
+        else:
+            articles.append({
+                "article_url": urljoin(scihub, d), 
+                "file_name": f"{d.replace('/', '-')}.pdf", 
+                "warning_str": d})
+    task = "ID"
     missing, log_file = operator.download(task, articles, dir)
     echo(f" {' '*len(task)} | {missing} missing: {log_file}")

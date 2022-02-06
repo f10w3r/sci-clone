@@ -23,8 +23,9 @@ class Utils:
                 bibtex['item']['cate'] = item.split(',')[0].split('{')[0]
                 bibtex['item']['citekey'] = item.split(',')[0].split('{')[1]
                 for key in bibtex['item']:
-                    bibtex['item'][key] = bibtex['item'][key].lstrip('{')
-                    bibtex['item'][key] = bibtex['item'][key].rstrip('},')
+                    bibtex['item'][key] = bibtex['item'][key].lstrip('{"').rstrip(',')
+                    if bibtex['item'][key].endswith('}') or bibtex['item'][key].endswith('"'):
+                        bibtex['item'][key] = bibtex['item'][key][:-1]
                     bibtex['item'][key] = bibtex['item'][key].replace('\n', ' ')
                 item_dict = dict(bibtex.items('item'))
                 if 'doi' in item_dict:
@@ -55,7 +56,7 @@ class Utils:
         """
             get pdf link from Sci-Hub webpage
         """
-        html = self.session.get(url, timeout=60, allow_redirects=False)
+        html = self.session.get(url, timeout=60)
         html.encoding = 'utf-8'
         html.raise_for_status()
         article = BeautifulSoup(html.text, 'html.parser').find('div', {'id': 'article'})

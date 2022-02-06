@@ -1,10 +1,6 @@
 Metadata-Version: 2.1
 Name: sci-clone
-<<<<<<< HEAD
-Version: 0.3.3.9
-=======
-Version: 0.3.3.8
->>>>>>> 5e6f122d15a98a3036b041af21c10077523f2569
+Version: 0.3.4
 Summary: A simple tool for cloning from Sci-Hub.
 Home-page: https://github.com/f10w3r/sci-clone
 Author: f10w3r
@@ -12,11 +8,13 @@ Author-email: lifuminster@gmail.com
 License: MIT
 Keywords: sci-hub sci-clone sci_clone sciclone issn doi paper article journal
 Platform: UNKNOWN
-Classifier: Development Status :: 3 - Alpha
 Classifier: Intended Audience :: Education
-Classifier: Programming Language :: Python :: 3
+Classifier: Intended Audience :: Science/Research
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 3 :: Only
 Classifier: Operating System :: MacOS :: MacOS X
 Classifier: Operating System :: Microsoft :: Windows
+Classifier: Operating System :: POSIX :: Linux
 Description-Content-Type: text/markdown
 License-File: LICENSE
 
@@ -67,7 +65,7 @@ $ pip install git+https://github.com/f10w3r/sci-clone
 ### I. Download by DOI.
 
 ```console
-$ sci-clone doi --help
+$ sci-clone doi
 Usage: sci-clone doi [OPTIONS] DOI...
 
 Arguments:
@@ -96,7 +94,7 @@ $ sci-clone doi bib.txt
 ### II. Download by Year.
 
 ```console
-$ sci-clone issn --help
+$ sci-clone issn
 Usage: sci-clone issn [OPTIONS] ISSN YEAR:[%Y]...
 
 Arguments:
