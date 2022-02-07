@@ -65,10 +65,14 @@ Options:
 $ sci-clone doi 10.1126/science.1248506 10.1017/S0003055413000014
 ```
 
-- Download with the DOIs within _bib.txt_ file:
+- Download with the DOIs within a file: _doi.txt_ or _doi.bib_
 
 ```console
-$ sci-clone doi bib.txt
+$ sci-clone doi examples/doi.txt
+```
+
+```{console}
+$ sci-clone doi examples/doi.bib
 ```
 
 ### II. Download by Year.
@@ -95,16 +99,24 @@ Options:
 $ sci-clone issn 0002-9602 2020
 ```
 
-- Download articles from journal _Sociology of Education_ (ISSN: 0038-0407) from year 2010 to 2012, save the files to directory ```AJS_2010-2012``` (should be created in advance):
+- Download articles from journal _Sociology of Education_ (ISSN: 0038-0407) from year 2010 to 2012:
 
 ```console
-$ sci-clone issn 0038-0407 2010 2012 -d AJS_2010-2012
+$ sci-clone issn 0038-0407 2010 2012
+```
+
+## Useful Configs
+
+- Download and save the files to directory ```papers``` (should be created before download):
+
+```{console}
+$ sci-clone issn 0038-0407 2010 2012 -d papers
 ```
 
 - If the default Sci-Hub URL is invalid, change it to another valid one:
 
 ```console
-$ sci-clone issn 0038-0407 2010 2012 -s sci-hub.tw
+$ sci-clone doi 10.1126/science.1248506 -s sci-hub.tw
 ```
 
 ## Uninstallation
@@ -115,4 +127,4 @@ $ pip uninstall sci-clone
 
 ## Notes
 
-   Sci-Hub does not have every article that has DOI, the ones that not found are logged in file ```missing.log``` under each sub-directory.   
+- Sci-Hub does not have every article that has DOI, the ones that not found are logged in file ```missing.log``` under each sub-directory.   
