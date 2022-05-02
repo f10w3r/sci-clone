@@ -43,7 +43,8 @@ class Utils:
         url = f"https://api.crossref.org/journals/{issn}/works"; cursor = '*'; doi_list = list()
         while True:
             r = self.session.get(url, params={'rows': 1000,'cursor': cursor,
-                            'filter': 'from-pub-date:'+ str(year) + '-01' + ',until-pub-date:' + str(year) + '-12'})
+                            'filter': 'from-pub-date:'+ str(year) + '-01' + ',until-pub-date:' + str(year) + '-12'},
+                            timeout=30)
             j = json.loads(r.text)
             if len(j['message']['items']):
                 doi_list.extend(j['message']['items'])
@@ -56,7 +57,7 @@ class Utils:
         """
             get pdf link from Sci-Hub webpage
         """
-        html = self.session.get(url, timeout=60)
+        html = self.session.get(url, timeout=30)
         html.encoding = 'utf-8'
         html.raise_for_status()
         article = BeautifulSoup(html.text, 'html.parser').find('div', {'id': 'article'})
@@ -82,7 +83,7 @@ class Utils:
         if os.path.exists(file_path): return True
         link = self.get_link(article_url)
         if link:
-            pdf = self.session.get(link, params={'download': True}, timeout=60)
+            pdf = self.session.get(link, params={'download': True}, timeout=30)
             with open(file_path, 'wb') as pdf_file:
                 pdf_file.write(pdf.content)
             return True
