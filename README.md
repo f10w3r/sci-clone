@@ -1,12 +1,12 @@
 ```
-  
+
              _____ __________     ________    ____  _   ________
             / ___// ____/  _/    / ____/ /   / __ \/ | / / ____/
-            \__ \/ /    / /_____/ /   / /   / / / /  |/ / __/   
-           ___/ / /____/ /_____/ /___/ /___/ /_/ / /|  / /___   
-          /____/\____/___/     \____/_____/\____/_/ |_/_____/ 
+            \__ \/ /    / /_____/ /   / /   / / / /  |/ / __/
+           ___/ / /____/ /_____/ /___/ /___/ /_/ / /|  / /___
+          /____/\____/___/     \____/_____/\____/_/ |_/_____/
 
-               A simple tool for cloning from Sci-Hub. 
+               A simple tool for cloning from Sci-Hub.
 
 ```
 ### Procedure
@@ -75,7 +75,7 @@ $ sci-clone doi examples/doi.txt
 $ sci-clone doi examples/doi.bib
 ```
 
-### II. Download by Year.
+### II. Download by Year (from a journal).
 
 ```console
 $ sci-clone issn
@@ -127,4 +127,4 @@ $ pip uninstall sci-clone
 
 ## Notes
 
-- Sci-Hub does not have every article that has DOI, the ones that not found are logged in file ```missing.log``` under each sub-directory.   
+- Sci-Hub does not have every article that has DOI, the ones that not found are logged in file ```missing.log``` under each sub-directory.
