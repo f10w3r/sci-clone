@@ -41,10 +41,14 @@ class Utils:
             get DOI list by year from CrossRef.org
         """
         url = f"https://api.crossref.org/journals/{issn}/works"; cursor = '*'; doi_list = list()
+        year = str(year)
         while True:
-            r = self.session.get(url, params={'rows': 1000,'cursor': cursor,
-                            'filter': 'from-pub-date:'+ str(year) + '-01' + ',until-pub-date:' + str(year) + '-12'},
-                            timeout=30)
+            params = {
+                "rows": 1000,
+                "cursor": cursor,
+                "filter": f"from-pub-date:{year}-01,until-pub-date:{year}-12"
+            }
+            r = self.session.get(url, params=params, timeout=30)
             j = json.loads(r.text)
             if len(j['message']['items']):
                 doi_list.extend(j['message']['items'])
@@ -93,7 +97,7 @@ class Utils:
 
     def download(self, batch, articles, folder):
         """
-            download a pdf batch
+            Download a pdf batch
         """
         log_file = os.path.join(folder, 'missing.log')
         logger.remove()

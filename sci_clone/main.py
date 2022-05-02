@@ -22,18 +22,18 @@ console = Console()
 app = Typer(invoke_without_command=True, no_args_is_help=True, help=config.__description__)
 
 @app.callback()
-def version_callback(version: Optional[bool] = Option(None, '--version', '-v', is_eager=True, help="Show version")):
+def version_callback(version: Optional[bool] = Option(None, '--version', '-V', is_eager=True, help="Show version")):
     global console
     if version:
         console.print(
             Panel(config.__banner__,
-                title=f'[i b #fcec0c on #58482c]{" "*2} =====   W  E  L  C  O  M  E  !  ===== {" "*2}[/]', 
+                title=f'[i b #fcec0c on #58482c]{" "*2} =====   W  E  L  C  O  M  E  !  ===== {" "*2}[/]',
                 subtitle=f'[#fcec0c on #58482c]{" "*4}[i]Ver. {config.__version__}   [/i]| [link={config.__url__}]Github: f10w3r/sci-clone[/link]{" "*4}',
                 width=70)
         )
         raise Exit()
 
-@app.command("issn", no_args_is_help=True, help="Download by year.")
+@app.command("issn", no_args_is_help=True, help="Download by year (of a journal).")
 def issn_process(
         issn: str = Argument(..., help="Journal ISSN (e.g.: 0002-9602)"),
         year: List[datetime] = Argument(..., formats=['%Y'], help="From year to year (e.g.: 2011 2012)"),
@@ -54,7 +54,7 @@ def issn_process(
         doi_list = operator.get_doi_list(y, issn)
         if not idx: console.print(f"   {doi_list[0]['container-title'][0]}   ".upper(), style="bold white italic on blue")
         articles = [{
-            "article_url": urljoin(scihub, article['DOI']), 
+            "article_url": urljoin(scihub, article['DOI']),
             "file_name": f"VOL{article['volume']}_{article['DOI'].replace('/', '-')}.pdf",
             "warning_str": f"{article['DOI']} | {issn} | {y}_VOL{article['volume']}"}
             for article in doi_list
@@ -93,12 +93,12 @@ def doi_process(
         if d.startswith('arXiv'):
             articles.append({
                 "article_url": urljoin('https://arxiv.org/abs', d.split(':')[1]),
-                "file_name": f"{d.replace(':', '-')}.pdf", 
+                "file_name": f"{d.replace(':', '-')}.pdf",
                 "warning_str": d})
         else:
             articles.append({
-                "article_url": urljoin(scihub, d), 
-                "file_name": f"{d.replace('/', '-')}.pdf", 
+                "article_url": urljoin(scihub, d),
+                "file_name": f"{d.replace('/', '-')}.pdf",
                 "warning_str": d})
     task = "ID"
     missing, log_file = operator.download(task, articles, dir)
