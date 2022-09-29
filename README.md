@@ -54,13 +54,13 @@ $ sci-clone DOI [DOI] ...
 
 #### Examples
 
-- Download two articles with DOIs:
+- Download two articles with DOI/URL:
 
 ```console
-$ sci-clone 10.1126/science.1248506 10.1017/S0003055413000014
+$ sci-clone 10.1126/science.1248506 https://www.jstor.org/stable/27854031
 ```
 
-- Download with the DOIs within a file: _doi.txt_ or _doi.bib_
+- Download with the DOI/URL within a file: _doi.txt_ or _doi.bib_
 
 ```console
 $ sci-clone examples/doi.txt
