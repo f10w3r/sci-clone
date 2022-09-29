@@ -1,6 +1,5 @@
 import typer # the only external dependency
-from . import config
-from typing import List, Tuple, Optional
+from typing import List, Tuple
 from pathlib import Path
 from os import path, getcwd, mkdir
 from datetime import datetime
@@ -10,17 +9,16 @@ import json
 from urllib import request, parse
 import configparser
 
-
 app = typer.Typer()
 
-
-etiquette = f"{config.__name__ }/{config.__version__} ({config.__url__}; mailto:{config.__author_email__}) BasedOn:{config.__name__}/{config.__version__}"
-header = {"user-agent": etiquette}
-
-def version_callback(value: bool):
-    if value:
-        typer.secho(f'{config.__version__}', fg=typer.colors.YELLOW)
-        raise typer.Exit(code=0)
+v_APP = 'Sci-Clone'
+v_APP_Ver = 'v0.4'
+v_APP_URL = 'https://github.com/f10w3r/sci-clone'
+v_APP_Email = 'lifuminster@gmail.com'
+v_API = "innerFunction"
+v_API_Ver = "v1.5"
+etiquette = f"{v_APP}/{v_APP_Ver} ({v_APP_URL}; mailto:{v_APP_Email}) BasedOn:{v_API}/{v_API_Ver}"
+header = {"user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)"}
 
 def get_file_list(file_path):
     with open(file_path, 'r') as f:
@@ -92,9 +90,8 @@ def retry(retry_count=3, retry_interval=2):
                     return return_values
                 except Exception as error:
                     # On exception, retry till retry_frequency is exhausted
-                    typer.secho(f"\nFATAL: retry: {count + 1} . Function execution failed for {decor_method.config.__nameconfig.__}", 
-                                fg=typer.colors.MAGENTA)
-                    raise typer.Exit(code=1)
+                    print("\nFATAL: retry: %s . Function execution failed for %s" %
+                                 (count + 1, decor_method.__name__))
                     # sleep for retry_interval
                     time.sleep(retry_interval)
                     # If the retries are exhausted, raise the exception
@@ -165,25 +162,21 @@ def get_pdf_scihub(url_scihub, query, save_to, header=header):
 
 @app.command()
 def main(
-        query: List[str] = typer.Argument(..., metavar="Query String", help="by DOI/URL or by ISSN", show_default=False, hidden=True),
-        url_scihub: str = typer.Option(config.__scihub__, '--scihub', '-s'),
+        query: List[str] = typer.Argument(..., help="by DOI/URL or by ISSN"),
+        url_scihub: str = typer.Option('sci-hub.wf', '--scihub', '-s'),
 #        url_libgen: str = typer.Option('libgen.rs', '--libgen', '-l'),
-        save_to: Path = typer.Option(getcwd, '--dir', '-d', help="Directory to download", show_default="Current directory"),
-        version: Optional[bool] = typer.Option(None, "--version", "-v", help="Show version", callback=version_callback)
+        save_to: Path = typer.Option(getcwd, '--dir', '-d', help="Directory to download"),
     ):
-    """
-    For detailed usage, please view: https://github.com/f10w3r/sci-clone
-    """
     
     try:
-        assert not url_scihub.startswith("http"), f'Error: Invalid URL, example: {config.__scihubconfig.__}'
+        assert not url_scihub.startswith("http"), 'Error: Invalid URL, example: sci-hub.tf'
         url_scihub = "https://" + url_scihub
 #        assert not url_libgen.startswith("http"), 'Error: Invalid URL, example: libgen.rs'
 #        url_libgen = f"http://{url_libgen}/scimag/"
         assert path.exists(save_to), 'Error: Invalid path.'
     except AssertionError as e:
         typer.secho(e.args[0], err=True, fg=typer.colors.MAGENTA)
-        raise typer.Exit(code=1)
+        raise typer.Exit()
     
     if re.match("^[0-9]{4}-[0-9]{3}[0-9xX]$", query[0]):
         issn = query[0]

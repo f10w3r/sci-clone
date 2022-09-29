@@ -1,23 +1,3 @@
-Metadata-Version: 2.1
-Name: sci-clone
-Version: 0.4.0
-Summary: A simple tool for cloning from Sci-Hub.
-Home-page: https://github.com/f10w3r/sci-clone
-Author: f10w3r
-Author-email: lifuminster@gmail.com
-License: MIT
-Keywords: sci-hub sci-clone sci_clone sciclone issn doi paper article journal
-Platform: UNKNOWN
-Classifier: Intended Audience :: Education
-Classifier: Intended Audience :: Science/Research
-Classifier: License :: OSI Approved :: MIT License
-Classifier: Programming Language :: Python :: 3 :: Only
-Classifier: Operating System :: MacOS :: MacOS X
-Classifier: Operating System :: Microsoft :: Windows
-Classifier: Operating System :: POSIX :: Linux
-Description-Content-Type: text/markdown
-License-File: LICENSE
-
 ```
 
              _____ __________     ________    ____  _   ________
@@ -29,14 +9,10 @@ License-File: LICENSE
                A simple tool for cloning from Sci-Hub.
 
 ```
-
-- Python Version > 3.6
-
-
 ### Procedure
 
-1. Query the *Digital Object Identifier* (DOI)/URL from crossref.org;
-2. Download articles from Sci-Hub with the DOI/URL.
+1. Query the *Digital Object Identifier* (DOI) from crossref.org;
+2. Download articles from Sci-Hub with the DOIs.
 
 ## Installation
 
@@ -60,16 +36,25 @@ $ pip install git+https://github.com/f10w3r/sci-clone
 
 ## Default Sources
 
-- **DOI/URL**: [crossref.org](https://crossref.org)
+- **DOI**: [crossref.org](https://crossref.org)
 
-- **Sci-Hub**: [sci-hub.wf](https://sci-hub.wf)
+- **Sci-Hub**: [sci-hub.tf](https://sci-hub.tf)
 
 ## Usage
 
 ### I. Download by DOI.
 
 ```console
-$ sci-clone DOI [DOI] ...
+$ sci-clone doi
+Usage: sci-clone doi [OPTIONS] DOI...
+
+Arguments:
+  DOI...  Valid DOI(s) or file (*.bib, *.txt)  [required]
+
+Options:
+  -d, --dir PATH     Directory to download  [default: (dynamic)]
+  -s, --scihub TEXT  Valid Sci-Hub URL  [default: sci-hub.tf]
+  --help             Show this message and exit.
 ```
 
 #### Examples
@@ -77,23 +62,33 @@ $ sci-clone DOI [DOI] ...
 - Download two articles with DOIs:
 
 ```console
-$ sci-clone 10.1126/science.1248506 10.1017/S0003055413000014
+$ sci-clone doi 10.1126/science.1248506 10.1017/S0003055413000014
 ```
 
 - Download with the DOIs within a file: _doi.txt_ or _doi.bib_
 
 ```console
-$ sci-clone examples/doi.txt
+$ sci-clone doi examples/doi.txt
 ```
 
 ```{console}
-$ sci-clone examples/doi.bib
+$ sci-clone doi examples/doi.bib
 ```
 
 ### II. Download by Year (from a journal).
 
 ```console
-$ sci-clone ISSN YEAR_FROM [YEAR_TO]
+$ sci-clone issn
+Usage: sci-clone issn [OPTIONS] ISSN YEAR:[%Y]...
+
+Arguments:
+  ISSN          Journal ISSN (e.g.: 0002-9602)  [required]
+  YEAR:[%Y]...  From year to year (e.g.: 2011 2012)  [required]
+
+Options:
+  -d, --dir PATH     Directory to download  [default: (dynamic)]
+  -s, --scihub TEXT  Valid Sci-Hub URL  [default: sci-hub.tf]
+  --help             Show this message and exit.
 ```
 
 #### Examples
@@ -101,13 +96,13 @@ $ sci-clone ISSN YEAR_FROM [YEAR_TO]
 - Download articles from journal _American Journal of Sociology_ (ISSN: 0002-9602) in year 2020:
 
 ```console
-$ sci-clone 0002-9602 2020
+$ sci-clone issn 0002-9602 2020
 ```
 
 - Download articles from journal _Sociology of Education_ (ISSN: 0038-0407) from year 2010 to 2012:
 
 ```console
-$ sci-clone 0038-0407 2010 2012
+$ sci-clone issn 0038-0407 2010 2012
 ```
 
 ## Useful Configs
@@ -115,13 +110,13 @@ $ sci-clone 0038-0407 2010 2012
 - Download and save the files to directory ```papers``` (should be created before download):
 
 ```{console}
-$ sci-clone 0038-0407 2010 2012 -d papers
+$ sci-clone issn 0038-0407 2010 2012 -d papers
 ```
 
 - If the default Sci-Hub URL is invalid, change it to another valid one:
 
 ```console
-$ sci-clone 10.1126/science.1248506 -s sci-hub.tw
+$ sci-clone doi 10.1126/science.1248506 -s sci-hub.tw
 ```
 
 ## Uninstallation
@@ -133,5 +128,3 @@ $ pip uninstall sci-clone
 ## Notes
 
 - Sci-Hub does not have every article that has DOI, the ones that not found are logged in file ```missing.log``` under each sub-directory.
-
-
