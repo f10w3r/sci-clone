@@ -1,4 +1,6 @@
-import typer # the only external dependency
+import typer 
+import pyfiglet
+import random
 from . import config
 from typing import List, Tuple, Optional
 from pathlib import Path
@@ -18,9 +20,19 @@ etiquette = f"{config.__name__ }/{config.__version__} ({config.__url__}; mailto:
 header = {"user-agent": etiquette}
 
 def version_callback(value: bool):
+    while True:
+        font = random.choice(pyfiglet.FigletFont.getFonts())
+        text = pyfiglet.Figlet(font=font).renderText('sci-clone')
+        n_col = len(text.split("\n")[0])
+        if n_col > 70:
+            continue
+        else:
+            break
     if value:
-        typer.secho(f'{config.__version__}', fg=typer.colors.YELLOW)
+        typer.secho(f"{text}\n\tversion:{config.__version__}\t(figlet font: {font})", fg=typer.colors.YELLOW)
         raise typer.Exit(code=0)
+    else:
+        return f"{text}\n\tversion:{config.__version__}\t(figlet font: {font})"
 
 def get_file_list(file_path):
     with open(file_path, 'r') as f:
@@ -120,6 +132,7 @@ def request_to(url, headers=False, params="", timeout=30, method="GET"):
     return response
 
 def walk_the_list(list_name, query_list, url_scihub, save_to):
+    print(version_callback(False))
     label = f"{list_name}: {len(query_list)}"
     undone = list()
     with typer.progressbar(query_list, label=label, show_eta=False, show_percent=False, fill_char="▒", 
@@ -163,7 +176,7 @@ def get_pdf_scihub(url_scihub, query, save_to, header=header):
 #    pass
 
 
-@app.command()
+@app.command(help="For detailed usage, please view: https://github.com/f10w3r/sci-clone")
 def main(
         query: List[str] = typer.Argument(..., metavar="Query String", help="by DOI/URL or by ISSN", show_default=False, hidden=True),
         url_scihub: str = typer.Option(config.__scihub__, '--scihub', '-s'),
@@ -171,10 +184,6 @@ def main(
         save_to: Path = typer.Option(getcwd, '--dir', '-d', help="Directory to download", show_default="Current directory"),
         version: Optional[bool] = typer.Option(None, "--version", "-v", help="Show version", callback=version_callback)
     ):
-    """
-    For detailed usage, please view: https://github.com/f10w3r/sci-clone
-    """
-    
     try:
         assert not url_scihub.startswith("http"), f'Error: Invalid URL, example: {config.__scihubconfig.__}'
         url_scihub = "https://" + url_scihub

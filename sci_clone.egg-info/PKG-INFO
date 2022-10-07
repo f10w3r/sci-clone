@@ -33,10 +33,10 @@ License-File: LICENSE
 - Python Version > 3.6
 
 
-### Procedure
+### Procedure (by ISSN)
 
-1. Query the *Digital Object Identifier* (DOI)/URL from crossref.org;
-2. Download articles from Sci-Hub with the DOI/URL.
+1. Query the *Digital Object Identifier* (DOI)/URL/PMID from crossref.org;
+2. Download articles from Sci-Hub with the DOI/URL/PMID.
 
 ## Installation
 
@@ -52,7 +52,7 @@ $ pip install sci-clone
 $ pip install sci-clone -i https://pypi.org/simple
 ```
 
-- or install from this repository if your country cannot connect to PyPI:
+- or install from this repository if you cannot connect to PyPI:
 
 ```console
 $ pip install git+https://github.com/f10w3r/sci-clone
@@ -60,34 +60,34 @@ $ pip install git+https://github.com/f10w3r/sci-clone
 
 ## Default Sources
 
-- **DOI/URL**: [crossref.org](https://crossref.org)
-
 - **Sci-Hub**: [sci-hub.wf](https://sci-hub.wf)
+
+- **DOI/URL/PMID**: [crossref.org](https://crossref.org)
 
 ## Usage
 
-### I. Download by DOI.
+### I. Download by DOI/URL.
 
 ```console
-$ sci-clone DOI [DOI] ...
+$ sci-clone DOI/URL/PMID [DOI/URL/PMID] ...
 ```
 
 #### Examples
 
-- Download two articles with DOIs:
+- Download two articles with DOI/URL/PMID:
 
 ```console
-$ sci-clone 10.1126/science.1248506 10.1017/S0003055413000014
+$ sci-clone 10.1126/science.1248506 https://www.jstor.org/stable/27854031
 ```
 
-- Download with the DOIs within a file: _doi.txt_ or _doi.bib_
+- Download with the DOI/URL/PMID within a file: _papers.txt_ or _papers.bib_
 
 ```console
-$ sci-clone examples/doi.txt
+$ sci-clone examples/papers.txt
 ```
 
-```{console}
-$ sci-clone examples/doi.bib
+```console
+$ sci-clone examples/papers.bib
 ```
 
 ### II. Download by Year (from a journal).
@@ -122,6 +122,12 @@ $ sci-clone 0038-0407 2010 2012 -d papers
 
 ```console
 $ sci-clone 10.1126/science.1248506 -s sci-hub.tw
+```
+
+## Upgrade
+
+```console
+$ pip install sci-clone --upgrade
 ```
 
 ## Uninstallation

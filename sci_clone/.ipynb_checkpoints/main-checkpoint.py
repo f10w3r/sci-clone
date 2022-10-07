@@ -1,123 +1,227 @@
-#!/usr/bin/env python3
-# -*- coding: UTF-8 -*-
-from . import utils, config
-from os import path, getcwd, mkdir
-from typer import Typer, Argument, Option, echo, Exit, FileText
-from datetime import datetime
-from typing import List, Optional
+import typer 
+import pyfiglet
+import random
+from . import config
+from typing import List, Tuple, Optional
 from pathlib import Path
-from rich.console import Console
-from rich.panel import Panel
-from requests import Session
-from requests.adapters import HTTPAdapter
-from requests.compat import urljoin
-
-session = Session()
-session.mount('http', HTTPAdapter(max_retries=3))
-session.headers.update({'User-Agent': 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 \
-    (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36'})
-operator = utils.Utils(session)
-
-console = Console()
-app = Typer(invoke_without_command=True,
-            no_args_is_help=True, help=config.__description__)
+from os import path, getcwd, mkdir
+from datetime import datetime
+import time
+import re
+import json
+from urllib import request, parse
+import configparser
 
 
-@app.callback()
-def version_callback(version: Optional[bool] = Option(None, '--version', '-V', is_eager=True, help="Show version")):
-    global console
-    if version:
-        console.print(
-            Panel(config.__banner__,
-                  title=f'[i b #fcec0c on #58482c]{" "*2} =====   W  E  L  C  O  M  E  !  ===== {" "*2}[/]',
-                  subtitle=f'[#fcec0c on #58482c]{" "*4}[i]Ver. {config.__version__}   [/i]| [link={config.__url__}]Github: f10w3r/sci-clone[/link]{" "*4}',
-                  width=70)
-        )
-        raise Exit()
+app = typer.Typer()
 
 
-@app.command("issn", no_args_is_help=True, help="Download by year (from a journal).")
-def issn_process(
-    issn: str = Argument(..., help="Journal ISSN (e.g.: 0002-9602)"),
-    year: List[datetime] = Argument(..., formats=[
-                                    '%Y'], help="From year to year (e.g.: 2011 2012)"),
-    dir: Path = Option(getcwd, '--dir', '-d', help="Directory to download"),
-    scihub: str = Option(config.__scihub__, '--scihub',
-                         '-s', help="Valid Sci-Hub URL")
-):
-    try:
-        assert len(year) in (
-            1, 2), "Argument Error: 'year' takes 1 or 2 values."
-        if len(year) == 1:
-            year = [year[0], year[0]]
-        assert datetime.strptime("1665", "%Y") < year[0] <= year[1] <= datetime.now(
-        ), "Argument Error: Invalid 'year', not a time machine."
-        assert not scihub.startswith(
-            "http"), 'Argument Error: Invalid URL, example: sci-hub.tf'
-        scihub = "https://" + scihub
-        assert path.exists(dir), 'Argument Error: Invalid path.'
-    except AssertionError as e:
-        echo(e.args[0], err=True)
-        raise Exit()
-    global operator, console
-    for idx, y in enumerate(range(year[0].year, year[1].year + 1)):
-        doi_list = operator.get_doi_list(y, issn)
-        if not idx:
-            console.print(
-                f"   {doi_list[0]['container-title'][0]}   ".upper(), style="bold white italic on blue")
-        articles = [{
-            "article_url": urljoin(scihub, article['DOI']),
-            "file_name": f"VOL{article['volume']}_{article['DOI'].replace('/', '-')}.pdf",
-            "warning_str": f"{article['DOI']} | {issn} | {y}_VOL{article['volume']}"}
-            for article in doi_list
-        ]
-        folder = path.join(dir, issn + '_' + str(y))
-        if not path.exists(folder):
-            mkdir(folder)
-        missing, log_file = operator.download(y, articles, folder)
-        echo(f" {' '*4} | {missing} missing: {log_file}")
+etiquette = f"{config.__name__ }/{config.__version__} ({config.__url__}; mailto:{config.__author_email__}) BasedOn:{config.__name__}/{config.__version__}"
+header = {"user-agent": etiquette}
 
-
-@app.command("doi", no_args_is_help=True, help="Download by DOI/arXivID.")
-def doi_process(
-    ids: List[str] = Argument(...,
-                              help="Valid DOI/arXivID(s) or file (*.bib, *.txt)"),
-    dir: Path = Option(getcwd, '--dir', '-d', help="Directory to download"),
-    scihub: str = Option(config.__scihub__, '--scihub',
-                         '-s', help="Valid Sci-Hub URL")
-):
-    global operator
-    try:
-        assert not scihub.startswith(
-            "http"), 'Argument Error: Invalid URL, example: sci-hub.tf'
-        scihub = "https://" + scihub
-        assert path.exists(dir), 'Argument Error: Invalid path.'
-        if ids[0].lower().endswith('.bib'):
-            assert path.exists(ids[0]), 'Argument Error: Invalid file path.'
-            ids_list = operator.parseBibTex(ids[0])
-        elif ids[0].lower().endswith('.txt'):
-            assert path.exists(ids[0]), 'Argument Error: Invalid file path.'
-            ids_list = operator.parseTxt(ids[0])
+def version_callback(value: bool):
+    while True:
+        font = random.choice(pyfiglet.FigletFont.getFonts())
+        text = pyfiglet.Figlet(font=font).renderText('sci-clone')
+        n_col = len(text.split("\n")[0])
+        if n_col > 70:
+            continue
         else:
-            ids_list = ids
-    except AssertionError as e:
-        echo(e.args[0], err=True)
-        raise Exit()
-    if not ids_list:
-        echo("There is no valid DOI.", err=True)
-        raise Exit()
-    articles = list()
-    for d in ids_list:
-        if d.startswith('arXiv'):
-            articles.append({
-                "article_url": urljoin('https://arxiv.org/abs', d.split(':')[1]),
-                "file_name": f"{d.replace(':', '-')}.pdf",
-                "warning_str": d})
+            break
+    if value:
+        typer.secho(f"{text}\n\tversion:{config.__version__}\t(figlet font: {font})", fg=typer.colors.YELLOW)
+        raise typer.Exit(code=0)
+    else:
+        return f"{text}\n\tversion:{config.__version__}\t(figlet font: {font})"
+
+def get_file_list(file_path):
+    with open(file_path, 'r') as f:
+        file_content = f.read()
+    if file_path.endswith('.txt'):
+        for line in file_content.split('\n'):
+            yield line
+    elif file_path.endswith('.bib'):
+        items = file_content.lower().strip().split('@')[1:]
+        for item in items:
+            bibtex = configparser.ConfigParser(allow_no_value=True)
+            bibtex.read_string('[item]' + item.rstrip('}\n'))
+            bibtex['item']['cate'] = item.split(',')[0].split('{')[0]
+            bibtex['item']['citekey'] = item.split(',')[0].split('{')[1]
+            for key in bibtex['item']:
+                bibtex['item'][key] = bibtex['item'][key].lstrip('{"').rstrip(',')
+                if bibtex['item'][key].endswith('}') or bibtex['item'][key].endswith('"'):
+                    bibtex['item'][key] = bibtex['item'][key][:-1]
+                bibtex['item'][key] = bibtex['item'][key].replace('\n', ' ')
+            item_dict = dict(bibtex.items('item'))
+            if 'doi' in item_dict:
+                yield item_dict['doi']
+            elif 'url' in item_dict:
+                yield item_dict['url']
+            elif 'pmid' in item_dict:
+                yield item_dict['pmid']
+
+def get_journal_works(issn, year_start, year_end, header=header):
+    url = f"http://api.crossref.org/journals/{issn}/works"
+    cursor = '*'
+    results = list()
+    while True:
+        from_to = f"from-pub-date:{year_start},until-pub-date:{year_end}"
+        r = request_to(url, headers = header,
+                       params={"rows": 1000, 
+                               "cursor": cursor, 
+                               "filter": from_to})
+        r_json = json.loads(r.read())
+        total = r_json['message']['total-results']
+        cursor = r_json['message']['next-cursor']
+        items = r_json['message']['items']
+        results += items
+        if len(results) < total:
+            continue
         else:
-            articles.append({
-                "article_url": urljoin(scihub, d),
-                "file_name": f"{d.replace('/', '-')}.pdf",
-                "warning_str": d})
-    task = "ID"
-    missing, log_file = operator.download(task, articles, dir)
-    echo(f" {' '*len(task)} | {missing} missing: {log_file}")
+            break
+    container_title = results[0]['container-title'][0]
+    yearly_result = dict()
+    for year in range(year_start, year_end+1):
+        year_list = list()
+        for r in results:
+            if r['published']['date-parts'][0][0] == year:
+                if 'DOI' in r:
+                    year_list.append(r['DOI'])
+                elif 'URL' in r:
+                    year_list.append(r['URL'])
+        yearly_result[year] = year_list
+    return container_title, yearly_result
+
+def retry(retry_count=3, retry_interval=2):
+    """
+    retry decorator
+    """
+    def real_decorator(decor_method):
+        def wrapper(*args, **kwargs):
+            for count in range(retry_count):
+                try:
+                    return_values = decor_method(*args, **kwargs)
+                    return return_values
+                except Exception as error:
+                    # On exception, retry till retry_frequency is exhausted
+                    typer.secho(f"\nFATAL: retry: {count + 1} . Function execution failed for {decor_method.config.__nameconfig.__}", 
+                                fg=typer.colors.MAGENTA)
+                    raise typer.Exit(code=1)
+                    # sleep for retry_interval
+                    time.sleep(retry_interval)
+                    # If the retries are exhausted, raise the exception
+                    if count == retry_count-1:
+                        raise error
+        return wrapper
+    return real_decorator
+
+@retry(retry_count=3, retry_interval=5)
+def request_to(url, headers=False, params="", timeout=30, method="GET"):
+    query_string = parse.urlencode(params)
+    if method == "GET":
+        if params:
+            req = request.Request(f"{url}?{query_string}")
+        else:
+            req = request.Request(url)
+    elif method == "POST":
+        req = request.Request(url, query_string.encode("UTF-8"))
+    if headers:
+        for key in headers.keys():
+            req.add_header(key, headers[key])
+    response = request.urlopen(req, timeout=timeout)
+    return response
+
+def walk_the_list(list_name, query_list, url_scihub, save_to):
+    print(version_callback(False))
+    label = f"{list_name}: {len(query_list)}"
+    undone = list()
+    with typer.progressbar(query_list, label=label, show_eta=False, show_percent=False, fill_char="▒", 
+                           item_show_func=lambda x: f"{str(query_list.index(x))} | {x}" if x else x) as progress:
+        for query in progress:
+            item_done = get_pdf_scihub(url_scihub, query, save_to)
+            if not item_done:
+                undone.append(query)
+    log = path.join(save_to, "missing.log")
+    with open(log, 'w') as f:
+        if undone:
+            f.writelines([f"{i}\n" for i in undone])
+            typer.secho(f'missing log: {log}', fg=typer.colors.MAGENTA, bold=True, italic=True)
+        else:
+            f.write("all done.")
+            typer.secho("all done.", fg=typer.colors.GREEN, bold=True, italic=True)
+    return undone
+
+def get_pdf_scihub(url_scihub, query, save_to, header=header):
+    payload = {"request": query}
+    response = request_to(url_scihub, headers=header, params=payload, method="POST")
+    response_text = response.read().decode()
+    if "Sorry, sci-hub has not included this article yet" in response_text:
+        file_url, file_name = False, False
+    else:
+        file_url = re.search("location.href='(.+)'", response_text).group(1).replace("\\", "")
+        file_name = re.search("pdf/(.+)\?", file_url).group(1).replace("/", "_")
+    if file_name:
+        file_path = path.join(save_to, file_name)
+        if path.exists(file_path):
+            return True
+        else:
+            response = request_to(file_url, headers=header)
+            with open(file_path, 'b+w') as f:
+                f.write(response.read())
+            return True
+    else:
+        return False
+
+#def get_pdf_libgen(url_scihub, query, save_to):
+#    pass
+
+
+@app.command(help="For detailed usage, please view: https://github.com/f10w3r/sci-clone")
+def main(
+        query: List[str] = typer.Argument(..., metavar="Query String", help="by DOI/URL or by ISSN", show_default=False, hidden=True),
+        url_scihub: str = typer.Option(config.__scihub__, '--scihub', '-s'),
+#        url_libgen: str = typer.Option('libgen.rs', '--libgen', '-l'),
+        save_to: Path = typer.Option(getcwd, '--dir', '-d', help="Directory to download", show_default="Current directory"),
+        version: Optional[bool] = typer.Option(None, "--version", "-v", help="Show version", callback=version_callback)
+    ):
+    try:
+        assert not url_scihub.startswith("http"), f'Error: Invalid URL, example: {config.__scihubconfig.__}'
+        url_scihub = "https://" + url_scihub
+#        assert not url_libgen.startswith("http"), 'Error: Invalid URL, example: libgen.rs'
+#        url_libgen = f"http://{url_libgen}/scimag/"
+        assert path.exists(save_to), 'Error: Invalid path.'
+    except AssertionError as e:
+        typer.secho(e.args[0], err=True, fg=typer.colors.MAGENTA)
+        raise typer.Exit(code=1)
+    
+    if re.match("^[0-9]{4}-[0-9]{3}[0-9xX]$", query[0]):
+        issn = query[0]
+        if len(query) in (2, 3) and all([re.match("^[\d]{4}$", i) for i in query[1:]]):
+            year0, year1 = int(query[1]), int(query[-1])
+            if not (1666 < year0 <= year1 <= datetime.now().year):
+                typer.secho('Please ensure valid year.', fg=typer.colors.MAGENTA)
+                raise typer.Exit(code=1)
+        else:
+            typer.secho('Please follow format: "sci-clone ISSN FROM_YEAR [TO_YEAR]"',
+                        fg=typer.colors.MAGENTA)
+            raise typer.Exit(code=1)
+        container_title, yearly_dict = get_journal_works(issn, year0, year1)
+        journal_dir = path.join(save_to, issn)
+        if not path.exists(journal_dir): mkdir(journal_dir)
+        for k,v in yearly_dict.items():
+            year_dir = path.join(journal_dir, str(k))
+            if not path.exists(year_dir): mkdir(year_dir)
+            list_name = f"{container_title} in {k}"
+            walk_the_list(list_name, v, url_scihub, year_dir)
+    else:
+        query_list = []
+        for line in query:
+            if line.endswith('.txt') or line.endswith('.bib'):
+                query_list += list(get_file_list(line))
+            else:
+                query_list += [line,]
+        list_name = "paper list"
+        walk_the_list(list_name, query_list, url_scihub, save_to)
+
+#if __name__ == "__main__":
+#    app()
