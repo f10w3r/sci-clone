@@ -9,7 +9,7 @@ app = typer.Typer()
 
 def version_callback(value: bool):
     if value:
-        typer.secho(util.LOGO, fg=typer.colors.GREEN)
+        typer.secho(config.__banner__, fg=typer.colors.GREEN)
         typer.secho(f"version: {config.__version__}", fg=typer.colors.YELLOW)
         typer.echo("For detailed usage, please view: https://github.com/f10w3r/sci-clone")
         raise typer.Exit(code=0)

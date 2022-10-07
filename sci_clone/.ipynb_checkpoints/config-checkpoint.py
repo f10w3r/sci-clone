@@ -3,7 +3,6 @@ __name__ = "sci-clone"
 __version__ = "0.4.2"
 __url__ = "https://github.com/f10w3r/sci-clone"
 __banner__ = """
-
          _____ __________     ________    ____  _   ________
         / ___// ____/  _/    / ____/ /   / __ \/ | / / ____/
         \__ \/ /    / /_____/ /   / /   / / / /  |/ / __/
@@ -11,7 +10,6 @@ __banner__ = """
       /____/\____/___/     \____/_____/\____/_/ |_/_____/
 
             A simple tool for cloning from Sci-Hub.
-
 """
 __description__ = "A simple tool for cloning from Sci-Hub."
 __author__ = "f10w3r"

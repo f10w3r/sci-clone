@@ -6,18 +6,6 @@ from urllib import request, parse
 import time, re, json, configparser
 
 
-LOGO = """
-             _____ __________     ________    ____  _   ________
-            / ___// ____/  _/    / ____/ /   / __ \/ | / / ____/
-            \__ \/ /    / /_____/ /   / /   / / / /  |/ / __/
-           ___/ / /____/ /_____/ /___/ /___/ /_/ / /|  / /___
-          /____/\____/___/     \____/_____/\____/_/ |_/_____/
-
-               A simple tool for cloning from Sci-Hub.
-"""
-
-
-
 class Requester:
     def __init__(self, config, timeout):
         etiquette = f"{config.__name__ }/{config.__version__} ({config.__url__}; " + \
